@@ -28,7 +28,6 @@ module.exports = {
         restManager.makeRequest('GET', '/user', null, accessToken, onSuccess, onError);
     },
     getLatestCommit: function(name, owner, accessToken, onSuccess, onError) {
-        console.log('name: ' + name + ' owner: ' + owner + ' accessToken: ' + accessToken);
         var path = '/repos/' + owner + '/' + name + '/commits';
         restManager.makeRequest('GET', path, null, accessToken, onSuccess, onError);
     }
