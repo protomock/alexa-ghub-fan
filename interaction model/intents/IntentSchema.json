@@ -1,0 +1,28 @@
+{
+    "intents": [{
+        "intent": "CreateRepositoryIntent",
+        "slots": [{
+            "name": "RepositoryName",
+            "type": "LIST_OF_REPOSITORY_NAMES"
+        }, {
+            "name": "Privacy",
+            "type": "LIST_OF_PRIVACY_TYPES"
+        }]
+    }, {
+        "intent": "ListMyRepositoriesIntent"
+    }, {
+        "intent": "ListAllMyOpenIssuesIntent"
+    }, {
+        "intent": "GetLatestCommitIntent",
+        "slots": [{
+            "name": "RepositoryName",
+            "type": "LIST_OF_REPOSITORY_NAMES"
+        }]
+    }, {
+        "intent": "AMAZON.HelpIntent"
+    }, {
+        "intent": "AMAZON.StopIntent"
+    }, {
+        "intent": "AMAZON.CancelIntent"
+    }]
+}

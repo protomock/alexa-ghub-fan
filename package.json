@@ -1,0 +1,19 @@
+{
+  "name": "alexa-github",
+  "version": "1.0.0",
+  "description": "Alexa github helper",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha specs"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "sinon": "^1.17.6"
+  },
+  "dependencies": {
+    "dependency-binder": "0.6.2"
+  }
+}
