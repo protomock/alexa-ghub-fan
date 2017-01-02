@@ -4,14 +4,16 @@ const GET = "GET";
 const POST = "POST";
 
 require('dependency-binder')({
-    https: require('https')
+    https: require('https'),
 });
-var http = binder.resolve('https');
+var https = binder.resolve('https');
 
-function createQueryString(data, accessToken) {
+function createQueryString(accessToken, data) {
     var qs = "?";
-    for (var key in data) {
-        qs += key + "=" + data[key] + "&";
+    if (data) {
+        for (var key in data) {
+            qs += key + "=" + data[key] + "&";
+        }
     }
     return qs += "access_token=" + accessToken;
 }
@@ -30,10 +32,10 @@ module.exports = {
         };
 
         options.path += method === GET ?
-            createQueryString(data, accessToken) :
-            createQueryString({}, accessToken)
+            createQueryString(accessToken, data) :
+            createQueryString(accessToken)
 
-        var req = http.request(options, function(res) {
+        var req = https.request(options, function(res) {
             res.body = "";
             res.setEncoding('utf8');
             res.on('data', function(chunk) {
@@ -44,7 +46,6 @@ module.exports = {
                 if (res.statusCode >= 200 && res.statusCode < 300) {
                     onSuccess(body);
                 } else {
-                    console.log(body);
                     onError(body);
                 }
             });

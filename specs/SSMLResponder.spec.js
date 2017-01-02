@@ -1,15 +1,20 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
 
-describe('SSMLProvider.js', function() {
-    var subject;
+describe('SSMLResponder.js', function() {
+    var subject,
+        responseMock,
+        tellStub;
     beforeEach(function() {
-        subject = require('../src/SSMLProvider');
+        tellStub = sinon.stub();
+        responseMock = {
+            tell: tellStub
+        }
+        subject = require('../src/SSMLResponder');
     });
 
-    describe('provideListOfRepositoriesSSML', function() {
+    describe('promptListOfRepositoriesResponse', function() {
         var listOfRepositories,
-            actual,
             expected;
         beforeEach(function() {
             expected = "<speak>" +
@@ -24,15 +29,15 @@ describe('SSMLProvider.js', function() {
                 name: "some-name-2",
                 private: false
             }];
-            actual = subject.provideListOfRepositoriesSSML(listOfRepositories)
+            subject.promptListOfRepositoriesResponse(listOfRepositories, responseMock)
         });
-        it('should create the correct ssml', function() {
-            expect(actual).to.be.equal(expected);
+        it('should call tell with the correct ssml', function() {
+            expect(tellStub.called).to.be.ok;
+            expect(tellStub.getCall(0).args[0]).to.be.equal(expected);
         });
     });
-    describe('provideListOfIssuesSSML', function() {
+    describe('promptListOfIssuesResponse', function() {
         var listOfIssues,
-            actual,
             expected;
         context('when the user has issues', function() {
             beforeEach(function() {
@@ -49,10 +54,11 @@ describe('SSMLProvider.js', function() {
                 }, {
                     title: "some-title-2",
                 }];
-                actual = subject.provideListOfIssuesSSML(listOfIssues)
+                subject.promptListOfIssuesResponse(listOfIssues, responseMock)
             });
-            it('should create the correct ssml', function() {
-                expect(actual).to.be.equal(expected);
+            it('should call tell with the correct ssml', function() {
+                expect(tellStub.called).to.be.ok;
+                expect(tellStub.getCall(0).args[0]).to.be.equal(expected);
             });
         });
         context('when the user does not have issues', function() {
@@ -61,10 +67,11 @@ describe('SSMLProvider.js', function() {
                     "<s>There is currently no open issues assigned to you.</s>" +
                     "</speak>";
                 listOfIssues = [];
-                actual = subject.provideListOfIssuesSSML(listOfIssues)
+                subject.promptListOfIssuesResponse(listOfIssues, responseMock);
             });
-            it('should create the correct ssml', function() {
-                expect(actual).to.be.equal(expected);
+            it('should call tell with the correct ssml', function() {
+                expect(tellStub.called).to.be.ok;
+                expect(tellStub.getCall(0).args[0]).to.be.equal(expected);
             });
         });
     });

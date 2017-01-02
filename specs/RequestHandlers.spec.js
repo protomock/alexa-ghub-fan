@@ -24,53 +24,39 @@ describe('RequestHandlers.js', function() {
     });
 
     describe('handleWelcomeRequest', function() {
-        var whatCanIdoForYou = "What can I do for you?",
-            speechOutput = {
-                speech: "Welcome to GitHub Helper. " +
-                    whatCanIdoForYou,
-                type: 'PlainText'
-            },
-            repromptOutput = {
-                speech: "I can help with doing things such as  " +
-                    "creatimg a repo or checking latest commit." +
-                    whatCanIdoForYou,
-                type: 'PlainText'
-            };
-
+        var promptWelcomeResponseStub;
         beforeEach(function() {
+            promptWelcomeResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptWelcomeResponse');
             subject.handleWelcomeRequest(responseMock);
         });
-        it('call ask with the correct parameter', function() {
-            expect(askStub.called).to.be.ok;
-            expect(askStub.getCall(0).args[0].speech).to.be.equal(speechOutput.speech);
-            expect(askStub.getCall(0).args[0].type).to.be.equal(speechOutput.type);
-            expect(askStub.getCall(0).args[1].speech).to.be.equal(repromptOutput.speech);
-            expect(askStub.getCall(0).args[1].type).to.be.equal(repromptOutput.type);
+        it('should prompt the user as expected', function() {
+            expect(promptWelcomeResponseStub.called).to.be.ok;
+            expect(promptWelcomeResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
         });
     });
 
     describe('handleHelpRequest', function() {
-        var whatCanIdoForYou = "What can I do for you?",
-            repromptOutput = {
-                speech: whatCanIdoForYou,
-                type: 'PlainText'
-            },
-            speechOutput = {
-                speech: "I can help with doing things such as  " +
-                    "creatimg a repo or checking latest commit." +
-                    whatCanIdoForYou,
-                type: 'PlainText'
-            };
-
+        var promptHelpResponseStub;
         beforeEach(function() {
+            promptHelpResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptHelpResponse');
             subject.handleHelpRequest(responseMock);
         });
-        it('call ask with the correct parameter', function() {
-            expect(askStub.called).to.be.ok;
-            expect(askStub.getCall(0).args[0].speech).to.be.equal(speechOutput.speech);
-            expect(askStub.getCall(0).args[0].type).to.be.equal(speechOutput.type);
-            expect(askStub.getCall(0).args[1].speech).to.be.equal(repromptOutput.speech);
-            expect(askStub.getCall(0).args[1].type).to.be.equal(repromptOutput.type);
+        it('should prompt the user as expected', function() {
+            expect(promptHelpResponseStub.called).to.be.ok;
+            expect(promptHelpResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
+        });
+
+    });
+
+    describe('handleStopIntent', function() {
+        var promptStopResponseStub;
+        beforeEach(function() {
+            promptStopResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptStopResponse');
+            subject.handleStopIntent(responseMock);
+        });
+        it('should prompt the user as expected', function() {
+            expect(promptStopResponseStub.called).to.be.ok;
+            expect(promptStopResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
         });
     });
     describe('handleCreateRepositoryRequest', function() {
@@ -108,52 +94,45 @@ describe('RequestHandlers.js', function() {
             });
 
             describe('onSuccess', function() {
-                var provideCreateRepositoryTextStub;
+                var promptCreateRepositoryReponseStub;
                 beforeEach(function() {
-                    provideCreateRepositoryTextStub = sinon.stub(binder.objectGraph['PlainTextProvider'], 'provideCreateRepositoryText');
-                    provideCreateRepositoryTextStub.returns('some-text');
+                    promptCreateRepositoryReponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptCreateRepositoryReponse');
                     createRepositoryStub.getCall(0).args[3]();
                 });
 
                 it('should tell the user the request was successful', function() {
-                    expect(tellStub.called).to.be.ok;
-                    expect(tellStub.getCall(0).args[0]).to.be.equal('some-text');
+                    expect(promptCreateRepositoryReponseStub.called).to.be.ok;
+                    expect(promptCreateRepositoryReponseStub.getCall(0).args[0]).to.be.equal(responseMock);
                 });
                 afterEach(function() {
-                    provideCreateRepositoryTextStub.restore();
+                    promptCreateRepositoryReponseStub.restore();
                 });
 
             });
             describe('onError', function() {
-                var provideApiErrorStub;
+                var promptApiErrorResponseStub;
                 beforeEach(function() {
-                    provideApiErrorStub = sinon.stub(binder.objectGraph['PlainTextProvider'], 'provideApiError');
-                    provideApiErrorStub.returns('some-error');
+                    promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
                     createRepositoryStub.getCall(0).args[4]();
                 });
 
-                it('should call the plainTextProvider', function() {
-                    expect(provideApiErrorStub.called).to.be.ok;
-                });
-                it('should tell the user the request was successful', function() {
-                    expect(tellStub.called).to.be.ok;
-                    expect(tellStub.getCall(0).args[0]).to.be.equal('some-error');
+                it('should tell the user the request was incorrect', function() {
+                    expect(promptApiErrorResponseStub.called).to.be.ok;
+                    expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
                 });
                 afterEach(function() {
-                    provideApiErrorStub.restore();
+                    promptApiErrorResponseStub.restore();
                 });
 
             });
         });
         context('when slots provider returns invalid slots', function() {
-            var provideSlotsErrorStub;
+            var promptSlotsErrorResponseStub;
             beforeEach(function() {
                 provideCreateRepositorySlotsStub.returns({
                     error: true
                 });
-
-                provideSlotsErrorStub = sinon.stub(binder.objectGraph['PlainTextProvider'], 'provideSlotsError');
-                provideSlotsErrorStub.returns('some-error');
+                promptSlotsErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptSlotsErrorResponse');
 
                 subject.handleCreateRepositoryRequest('intent', sessionMock, responseMock);
             });
@@ -162,15 +141,12 @@ describe('RequestHandlers.js', function() {
                 expect(provideCreateRepositorySlotsStub.called).to.be.ok;
                 expect(provideCreateRepositorySlotsStub.getCall(0).args[0]).to.be.equal('intent');
             });
-            it('should call the plainTextProvider', function() {
-                expect(provideSlotsErrorStub.called).to.be.ok;
-            });
-            it('should tell the user the request was successful', function() {
-                expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0]).to.be.equal('some-error');
+            it('should tell the user that alexa could not understand', function() {
+                expect(promptSlotsErrorResponseStub.called).to.be.ok;
+                expect(promptSlotsErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
             });
             afterEach(function() {
-                provideSlotsErrorStub.restore();
+                promptSlotsErrorResponseStub.restore();
             });
 
         });
@@ -182,10 +158,10 @@ describe('RequestHandlers.js', function() {
     });
     describe('handleListRepositoryRequest', function() {
         var listMyRepositoriesStub,
-            provideListOfRepositoriesSSMLStub;
+            promptListOfRepositoriesResponseStub;
         beforeEach(function() {
             listMyRepositoriesStub = sinon.stub(binder.objectGraph['GitHubClient'], 'listMyRepositories');
-            provideListOfRepositoriesSSMLStub = sinon.stub(binder.objectGraph['SSMLProvider'], 'provideListOfRepositoriesSSML');
+            promptListOfRepositoriesResponseStub = sinon.stub(binder.objectGraph['SSMLResponder'], 'promptListOfRepositoriesResponse');
             subject.handleListRepositoryRequest(sessionMock, responseMock);
         });
 
@@ -197,50 +173,47 @@ describe('RequestHandlers.js', function() {
         });
 
         describe('onSuccess', function() {
-            var speechOutput
             beforeEach(function() {
                 speechOutput = {
                     speech: "some-ssml",
                     type: "SSML"
                 };
-                provideListOfRepositoriesSSMLStub.returns('some-ssml');
-                listMyRepositoriesStub.getCall(0).args[1]();
+                listMyRepositoriesStub.getCall(0).args[1]('some-list');
             });
 
             it('should tell the user the request was successful', function() {
-                expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0].speech).to.be.equal(speechOutput.speech);
-                expect(tellStub.getCall(0).args[0].type).to.be.equal(speechOutput.type);
+                expect(promptListOfRepositoriesResponseStub.called).to.be.ok;
+                expect(promptListOfRepositoriesResponseStub.getCall(0).args[0]).to.be.equal('some-list');
+                expect(promptListOfRepositoriesResponseStub.getCall(0).args[1]).to.be.equal(responseMock);
             });
         });
         describe('onError', function() {
-            var speechOutput
+            var promptApiErrorResponseStub;
             beforeEach(function() {
-                speechOutput = {
-                    speech: "There seems to be an issue right now. Try again later.",
-                    type: "PlainText"
-                };
+                promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
                 listMyRepositoriesStub.getCall(0).args[2]();
             });
 
-            it('should tell the user the request was unsuccessful', function() {
-                expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0].speech).to.be.equal(speechOutput.speech);
-                expect(tellStub.getCall(0).args[0].type).to.be.equal(speechOutput.type);
+            it('should tell the user the request was incorrect', function() {
+                expect(promptApiErrorResponseStub.called).to.be.ok;
+                expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
+            });
+            afterEach(function() {
+                promptApiErrorResponseStub.restore();
             });
         });
 
         afterEach(function() {
-            provideListOfRepositoriesSSMLStub.restore();
+            promptListOfRepositoriesResponseStub.restore();
             listMyRepositoriesStub.restore();
         });
     });
     describe('handleListAllMyOpenIssuesRequest', function() {
         var listAllMyOpenIssuesStub,
-            provideListOfIssuesSSMLStub;
+            promptListOfIssuesResponseStub;
         beforeEach(function() {
             listAllMyOpenIssuesStub = sinon.stub(binder.objectGraph['GitHubClient'], 'listAllMyOpenIssues');
-            provideListOfIssuesSSMLStub = sinon.stub(binder.objectGraph['SSMLProvider'], 'provideListOfIssuesSSML');
+            promptListOfIssuesResponseStub = sinon.stub(binder.objectGraph['SSMLResponder'], 'promptListOfIssuesResponse');
             subject.handleListAllMyOpenIssuesRequest(sessionMock, responseMock);
         });
 
@@ -252,41 +225,35 @@ describe('RequestHandlers.js', function() {
         });
 
         describe('onSuccess', function() {
-            var speechOutput
             beforeEach(function() {
-                speechOutput = {
-                    speech: "some-ssml",
-                    type: "SSML"
-                };
-                provideListOfIssuesSSMLStub.returns('some-ssml');
-                listAllMyOpenIssuesStub.getCall(0).args[1]();
+                listAllMyOpenIssuesStub.getCall(0).args[1]('some-list');
             });
 
             it('should tell the user the request was successful', function() {
-                expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0].speech).to.be.equal(speechOutput.speech);
-                expect(tellStub.getCall(0).args[0].type).to.be.equal(speechOutput.type);
+                expect(promptListOfIssuesResponseStub.called).to.be.ok;
+                expect(promptListOfIssuesResponseStub.getCall(0).args[0]).to.be.equal('some-list');
+                expect(promptListOfIssuesResponseStub.getCall(0).args[1]).to.be.equal(responseMock);
             });
         });
         describe('onError', function() {
-            var speechOutput
+            var promptApiErrorResponseStub;
             beforeEach(function() {
-                speechOutput = {
-                    speech: "There seems to be an issue right now. Try again later.",
-                    type: "PlainText"
-                };
+                promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
                 listAllMyOpenIssuesStub.getCall(0).args[2]();
             });
 
-            it('should tell the user the request was unsuccessful', function() {
-                expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0].speech).to.be.equal(speechOutput.speech);
-                expect(tellStub.getCall(0).args[0].type).to.be.equal(speechOutput.type);
+            it('should tell the user the request was incorrect', function() {
+                expect(promptApiErrorResponseStub.called).to.be.ok;
+                expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
+            });
+
+            afterEach(function() {
+                promptApiErrorResponseStub.restore();
             });
         });
 
         afterEach(function() {
-            provideListOfIssuesSSMLStub.restore();
+            promptListOfIssuesResponseStub.restore();
             listAllMyOpenIssuesStub.restore();
         });
     });
@@ -339,13 +306,10 @@ describe('RequestHandlers.js', function() {
                 });
 
                 describe('getLatestCommit - onSuccess', function() {
-                    var speechOutput,
-                        provideLatestCommitTextStub,
+                    var promptLatestCommitResponseStub,
                         output;
                     beforeEach(function() {
-                        provideLatestCommitTextStub = sinon.stub(binder.objectGraph['PlainTextProvider'], 'provideLatestCommitText');
-                        provideLatestCommitTextStub.returns('some-text');
-
+                        promptLatestCommitResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptLatestCommitResponse');
                         output = [{
                             "commit": {
                                 "committer": {
@@ -357,56 +321,49 @@ describe('RequestHandlers.js', function() {
                         getLatestCommitStub.getCall(0).args[3](output);
                     });
                     afterEach(function() {
-                        provideLatestCommitTextStub.restore();
+                        promptLatestCommitResponseStub.restore();
                     });
 
                     it('should call plainTextProvider', function() {
-                        expect(provideLatestCommitTextStub.called).to.be.ok;
-                        expect(provideLatestCommitTextStub.getCall(0).args[0]).to.be.equal('some-name');
-                        expect(provideLatestCommitTextStub.getCall(0).args[1]).to.be.equal('some-committer');
-                        expect(provideLatestCommitTextStub.getCall(0).args[2]).to.be.equal('some-message');
-                        expect(provideLatestCommitTextStub.getCall(0).args[3]).to.be.equal('some-owner');
-                    });
-
-                    it('should tell the user the request was successful', function() {
-                        expect(tellStub.called).to.be.ok;
-                        expect(tellStub.getCall(0).args[0]).to.be.equal('some-text');
+                        expect(promptLatestCommitResponseStub.called).to.be.ok;
+                        expect(promptLatestCommitResponseStub.getCall(0).args[0]).to.be.equal('some-name');
+                        expect(promptLatestCommitResponseStub.getCall(0).args[1]).to.be.equal('some-committer');
+                        expect(promptLatestCommitResponseStub.getCall(0).args[2]).to.be.equal('some-message');
+                        expect(promptLatestCommitResponseStub.getCall(0).args[3]).to.be.equal('some-owner');
+                        expect(promptLatestCommitResponseStub.getCall(0).args[4]).to.be.equal(responseMock);
                     });
                 });
                 describe('getLatestCommit - onError', function() {
-                    var provideApiErrorStub;
+                    var promptApiErrorResponseStub;
                     beforeEach(function() {
-                        provideApiErrorStub = sinon.stub(binder.objectGraph['PlainTextProvider'], 'provideApiError');
-                        provideApiErrorStub.returns('some-error');
-
+                        promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
                         getLatestCommitStub.getCall(0).args[4]();
                     });
-                    afterEach(function() {
-                        provideApiErrorStub.restore();
+
+                    it('should tell the user the request was incorrect', function() {
+                        expect(promptApiErrorResponseStub.called).to.be.ok;
+                        expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
                     });
 
-
-                    it('should tell the user the request was unsuccessful', function() {
-                        expect(tellStub.called).to.be.ok;
-                        expect(tellStub.getCall(0).args[0]).to.be.equal('some-error');
+                    afterEach(function() {
+                        promptApiErrorResponseStub.restore();
                     });
                 });
             });
             describe('onError', function() {
-                var provideApiErrorStub;
+                var promptApiErrorResponseStub;
                 beforeEach(function() {
-                    provideApiErrorStub = sinon.stub(binder.objectGraph['PlainTextProvider'], 'provideApiError');
-                    provideApiErrorStub.returns('some-error');
-
+                    promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
                     getMyInfoStub.getCall(0).args[2]();
                 });
-                afterEach(function() {
-                    provideApiErrorStub.restore();
+
+                it('should tell the user the request was incorrect', function() {
+                    expect(promptApiErrorResponseStub.called).to.be.ok;
+                    expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
                 });
 
-                it('should tell the user the request was unsuccessful', function() {
-                    expect(tellStub.called).to.be.ok;
-                    expect(tellStub.getCall(0).args[0]).to.be.equal('some-error');
+                afterEach(function() {
+                    promptApiErrorResponseStub.restore();
                 });
             });
 
@@ -416,25 +373,21 @@ describe('RequestHandlers.js', function() {
             });
         });
         context('when slots are not valid', function() {
-            var provideSlotsErrorStub;
+            var promptSlotsErrorResponseStub;
             beforeEach(function() {
                 provideLatestCommitSlotsStub.returns({
                     error: 'some-name'
                 });
-                provideSlotsErrorStub = sinon.stub(binder.objectGraph['PlainTextProvider'], 'provideSlotsError');
-                provideSlotsErrorStub.returns('some-error');
+                promptSlotsErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptSlotsErrorResponse');
                 subject.handleGetLatestCommitRequest('intent', sessionMock, responseMock);
             });
 
             it('should call the plainTextProvider', function() {
-                expect(provideSlotsErrorStub.called).to.be.ok;
-            });
-            it('should tell the user the request was successful', function() {
-                expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0]).to.be.equal('some-error');
+                expect(promptSlotsErrorResponseStub.called).to.be.ok;
+                expect(promptSlotsErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
             });
             afterEach(function() {
-                provideSlotsErrorStub.restore();
+                promptSlotsErrorResponseStub.restore();
             });
 
         });

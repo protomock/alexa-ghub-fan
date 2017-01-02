@@ -172,7 +172,7 @@ describe('RestManager.js', function() {
                             });
                             onStub.getCall(1).args[1]();
                         });
-                        it('should call the success callback', function() {
+                        it('should call the error callback', function() {
                             expect(error.called).to.be.ok;
                         });
                     });

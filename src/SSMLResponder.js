@@ -1,5 +1,15 @@
+require('dependency-binder')({
+  'AlexaSkill': require('./AlexaSkill')
+});
+var AlexaSkill = binder.resolve('AlexaSkill');
+
+var speechOutput = {
+    speech: "",
+    type: AlexaSkill.speechOutputType.SSML
+};
+
 module.exports = {
-    provideListOfRepositoriesSSML: function(listOfRepositories) {
+    promptListOfRepositoriesResponse: function(listOfRepositories, response) {
         var ssml = "<speak><s>Here are your repos:</s>";
         for (var i = 0; i < listOfRepositories.length; i++) {
             var name = listOfRepositories[i].name;
@@ -9,9 +19,10 @@ module.exports = {
                 ssml += "<s>" + name + "</s>";
             }
         }
-        return ssml += "</speak>";
+        ssml += "</speak>";
+        response.tell(ssml);
     },
-    provideListOfIssuesSSML: function(listOfIssues) {
+    promptListOfIssuesResponse: function(listOfIssues, response) {
         var ssml = "<speak>";
         if (listOfIssues.length > 0) {
             ssml += "<s>Here are the issues that are assigned to you and open:</s>";
@@ -27,6 +38,7 @@ module.exports = {
         } else {
             ssml += "<s>There is currently no open issues assigned to you.</s>";
         }
-        return ssml += "</speak>";
+        ssml += "</speak>";
+        response.tell(ssml);
     }
 }

@@ -56,7 +56,6 @@ describe('IntentHandlers.js', function() {
         var handleGetLatestCommitRequest;
         beforeEach(function() {
             handleGetLatestCommitRequest = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleGetLatestCommitRequest');
-
             subject['GetLatestCommitIntent']('intent', 'session', 'response')
         });
 
@@ -72,7 +71,6 @@ describe('IntentHandlers.js', function() {
         var handleHelpRequestStub;
         beforeEach(function() {
             handleHelpRequestStub = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleHelpRequest');
-
             subject['AMAZON.HelpIntent']('intent', 'session', 'response')
         });
 
@@ -83,36 +81,34 @@ describe('IntentHandlers.js', function() {
     });
 
     describe('AMAZON.StopIntent', function() {
-        var responseMock,
-            tellStub;
+        var handleStopIntent;
         beforeEach(function() {
-            tellStub = sinon.stub();
-            responseMock = {
-                tell: tellStub
-            };
-            subject['AMAZON.StopIntent']('intent', 'session', responseMock)
+            handleStopIntent = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleStopIntent');
+            subject['AMAZON.StopIntent']('intent', 'session', 'response')
         });
 
         it('should handle the stop request', function() {
-            expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0]).to.be.equal('Goodbye');
+            expect(handleStopIntent.called).to.be.ok;
+            expect(handleStopIntent.getCall(0).args[0]).to.be.equal('response');
+        });
+        afterEach(function() {
+          handleStopIntent.restore();
         });
     });
 
     describe('AMAZON.CancelIntent', function() {
-        var responseMock,
-            tellStub;
+        var handleStopIntent;
         beforeEach(function() {
-            tellStub = sinon.stub();
-            responseMock = {
-                tell: tellStub
-            };
-            subject['AMAZON.CancelIntent']('intent', 'session', responseMock)
+            handleStopIntent = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleStopIntent');
+            subject['AMAZON.CancelIntent']('intent', 'session', 'response')
         });
 
-        it('should handle the cancel request', function() {
-            expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0]).to.be.equal('Goodbye');
+        it('should handle the stop request', function() {
+            expect(handleStopIntent.called).to.be.ok;
+            expect(handleStopIntent.getCall(0).args[0]).to.be.equal('response');
+        });
+        afterEach(function() {
+          handleStopIntent.restore();
         });
     });
 });

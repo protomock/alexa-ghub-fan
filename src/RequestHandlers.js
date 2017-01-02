@@ -1,97 +1,57 @@
 require('dependency-binder')({
-    'AlexaSkill': require('./AlexaSkill'),
     'SlotProvider': require('./SlotProvider'),
     'GitHubClient': require('./GitHubClient'),
-    'SSMLProvider': require('./SSMLProvider'),
-    'PlainTextProvider': require('./PlainTextProvider')
+    'SSMLResponder': require('./SSMLResponder'),
+    'PlainTextResponder': require('./PlainTextResponder')
 });
-var AlexaSkill = binder.resolve('AlexaSkill');
-var ssmlProvider = binder.resolve('SSMLProvider');
+
+var ssmlProvider = binder.resolve('SSMLResponder');
 var slotProvider = binder.resolve('SlotProvider');
 var client = binder.resolve('GitHubClient');
-var plainTextProvider = binder.resolve('PlainTextProvider');
+var plainTextResponder = binder.resolve('PlainTextResponder');
 
 module.exports = {
     handleWelcomeRequest: function(response) {
-        var whatCanIdoForYou = "What can I do for you?",
-            speechOutput = {
-                speech: "Welcome to GitHub Helper. " +
-                    whatCanIdoForYou,
-                type: AlexaSkill.speechOutputType.PLAIN_TEXT
-            },
-            repromptOutput = {
-                speech: "I can help with doing things such as  " +
-                    "creatimg a repo or checking latest commit." +
-                    whatCanIdoForYou,
-                type: AlexaSkill.speechOutputType.PLAIN_TEXT
-            };
-        response.ask(speechOutput, repromptOutput);
+        plainTextResponder.promptWelcomeResponse(response);
     },
     handleHelpRequest: function(response) {
-        var whatCanIdoForYou = "What can I do for you?",
-            speechOutput = {
-                speech: "I can help with doing things such as  " +
-                    "creatimg a repo or checking latest commit." +
-                    whatCanIdoForYou,
-                type: AlexaSkill.speechOutputType.PLAIN_TEXT
-            },
-            repromptOutput = {
-                speech: whatCanIdoForYou,
-                type: AlexaSkill.speechOutputType.PLAIN_TEXT
-            };
-
-        response.ask(speechOutput, repromptOutput);
+        plainTextResponder.promptHelpResponse(response);
+    },
+    handleStopIntent: function(response) {
+        plainTextResponder.promptStopResponse(response);
     },
     handleCreateRepositoryRequest: function(intent, session, response) {
-        var speechOutput = {
-            speech: "",
-            type: AlexaSkill.speechOutputType.PLAIN_TEXT
-        };
         var slots = slotProvider.provideCreateRepositorySlots(intent);
 
         if (slots.error) {
-            response.tell(plainTextProvider.provideSlotsError());
+            plainTextResponder.promptSlotsErrorResponse(response);
         } else {
             var onSuccess = function() {
-                response.tell(plainTextProvider.provideCreateRepositoryText());
+                plainTextResponder.promptCreateRepositoryReponse(response);
             };
             var onError = function() {
-                response.tell(plainTextProvider.provideApiError());
+                plainTextResponder.promptApiErrorResponse(response);
             };
 
             client.createRepository(slots.RepositoryName.value, slots.Privacy.value, session.user.accessToken, onSuccess, onError);
         }
     },
     handleListRepositoryRequest: function(session, response) {
-        var speechOutput = {
-            speech: "",
-            type: AlexaSkill.speechOutputType.PLAIN_TEXT
-        };
-        var onSuccess = function(output) {
-            speechOutput.speech = ssmlProvider.provideListOfRepositoriesSSML(output);
-            speechOutput.type = AlexaSkill.speechOutputType.SSML;
-            response.tell(speechOutput);
+        var onSuccess = function(data) {
+            ssmlProvider.promptListOfRepositoriesResponse(data, response);
         };
         var onError = function() {
-            speechOutput.speech = "There seems to be an issue right now. Try again later."
-            response.tell(speechOutput);
+            plainTextResponder.promptApiErrorResponse(response);
         };
 
         client.listMyRepositories(session.user.accessToken, onSuccess, onError);
     },
     handleListAllMyOpenIssuesRequest: function(session, response) {
-        var speechOutput = {
-            speech: "",
-            type: AlexaSkill.speechOutputType.PLAIN_TEXT
-        };
-        var onSuccess = function(output) {
-            speechOutput.speech = ssmlProvider.provideListOfIssuesSSML(output);
-            speechOutput.type = AlexaSkill.speechOutputType.SSML;
-            response.tell(speechOutput);
+        var onSuccess = function(data) {
+            ssmlProvider.promptListOfIssuesResponse(data, response);
         };
         var onError = function() {
-            speechOutput.speech = "There seems to be an issue right now. Try again later."
-            response.tell(speechOutput);
+            plainTextResponder.promptApiErrorResponse(response);
         };
 
         client.listAllMyOpenIssues(session.user.accessToken, onSuccess, onError);
@@ -101,16 +61,15 @@ module.exports = {
         var latestCommitSlot = slotProvider.provideLatestCommitSlots(intent);
 
         if (latestCommitSlot.error) {
-            response.tell(plainTextProvider.provideSlotsError());
+            plainTextResponder.promptSlotsErrorResponse(response);
         } else {
             var onError = function() {
-                response.tell(plainTextProvider.provideApiError());
+                plainTextResponder.promptApiErrorResponse(response);
             };
             var onSuccess = function(output) {
                 client.getLatestCommit(latestCommitSlot.value, output.login, session.user.accessToken, function(commits) {
                     var latestCommit = commits[0];
-                    var speechOutput = plainTextProvider.provideLatestCommitText(latestCommitSlot.value ,latestCommit.commit.committer.name, latestCommit.commit.message, output.login);
-                    response.tell(speechOutput);
+                    plainTextResponder.promptLatestCommitResponse(latestCommitSlot.value, latestCommit.commit.committer.name, latestCommit.commit.message, output.login, response);
                 }, onError);
             };
 
