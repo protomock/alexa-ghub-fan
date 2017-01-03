@@ -20,7 +20,8 @@ module.exports = {
             }
         }
         ssml += "</speak>";
-        response.tell(ssml);
+        speechOutput.speech = ssml;
+        response.tell(speechOutput);
     },
     promptListOfIssuesResponse: function(listOfIssues, response) {
         var ssml = "<speak>";
@@ -39,6 +40,7 @@ module.exports = {
             ssml += "<s>There is currently no open issues assigned to you.</s>";
         }
         ssml += "</speak>";
-        response.tell(ssml);
+        speechOutput.speech = ssml;
+        response.tell(speechOutput);
     }
 }

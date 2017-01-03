@@ -14,15 +14,27 @@ var client = binder.resolve('GitHubClient');
 var plainTextResponder = binder.resolve('PlainTextResponder');
 var stringMatcher = binder.resolve('StringMatcher');
 
+function getUserInfo(session, done) {
+    var onSuccess = function(data) {
+        session.attributes[OWNER_KEY] = data.login;
+        console.log("handleSessionStarted => session.attributes[OWNER_KEY] = " + session.attributes[OWNER_KEY]);
+        if (done) {
+            done();
+        }
+    };
+    client.getMyInfo(session.user.accessToken, onSuccess, null);
+}
+
 module.exports = {
-    handleSessionStarted: function(session) {
-        var onSuccess = function(data) {
-            session.attributes[OWNER_KEY] = data.owner;
-        };
-        client.getMyInfo(session.user.accessToken, onSuccess, null);
+    handleSessionStarted: function(sessionStartedRequest, session) {
+        if (sessionStartedRequest.type != 'LaunchRequest') {
+            getUserInfo(session);
+        }
     },
-    handleWelcomeRequest: function(response) {
-        plainTextResponder.promptWelcomeResponse(response);
+    handleWelcomeRequest: function(session, response) {
+        getUserInfo(session, function() {
+            plainTextResponder.promptWelcomeResponse(response);
+        });
     },
     handleHelpRequest: function(response) {
         plainTextResponder.promptHelpResponse(response);
@@ -67,20 +79,20 @@ module.exports = {
         client.listAllMyOpenIssues(session.user.accessToken, onSuccess, onError);
     },
     handleGetLatestCommitRequest: function(intent, session, response) {
-
+        console.log(JSON.stringify(session));
         var latestCommitSlot = slotProvider.provideLatestCommitSlots(intent);
 
         if (latestCommitSlot.error) {
             plainTextResponder.promptSlotsErrorResponse(response);
         } else {
-            var onError = function() {
+            var onError = function(error) {
                 plainTextResponder.promptApiErrorResponse(response);
             };
             var onSuccess = function(data) {
                 var repositoryName = stringMatcher.match(data, MATCHER_KEY, latestCommitSlot.value);
                 client.getLatestCommit(repositoryName, session.attributes[OWNER_KEY], session.user.accessToken, function(commits) {
                     var latestCommit = commits[0];
-                    plainTextResponder.promptLatestCommitResponse(latestCommitSlot.value, latestCommit.commit.committer.name, latestCommit.commit.message, response);
+                    plainTextResponder.promptLatestCommitResponse(repositoryName, latestCommit.commit.committer.name, latestCommit.commit.message, response);
                 }, onError);
             };
 

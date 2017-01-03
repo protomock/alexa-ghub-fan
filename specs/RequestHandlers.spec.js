@@ -44,7 +44,7 @@ describe('RequestHandlers.js', function() {
             var data;
             beforeEach(function() {
                 data = {
-                    owner: 'some-owner'
+                    login: 'some-owner'
                 };
                 getMyInfoStub.getCall(0).args[1](data);
             });
@@ -388,7 +388,7 @@ describe('RequestHandlers.js', function() {
 
                     it('should call plainTextProvider', function() {
                         expect(promptLatestCommitResponseStub.called).to.be.ok;
-                        expect(promptLatestCommitResponseStub.getCall(0).args[0]).to.be.equal('some-name');
+                        expect(promptLatestCommitResponseStub.getCall(0).args[0]).to.be.equal('some-match');
                         expect(promptLatestCommitResponseStub.getCall(0).args[1]).to.be.equal('some-committer');
                         expect(promptLatestCommitResponseStub.getCall(0).args[2]).to.be.equal('some-message');
                         expect(promptLatestCommitResponseStub.getCall(0).args[3]).to.be.equal(responseMock);

@@ -17,11 +17,14 @@ describe('SSMLResponder.js', function() {
         var listOfRepositories,
             expected;
         beforeEach(function() {
-            expected = "<speak>" +
-                "<s>Here are your repos:</s>" +
-                "<s>some-name which is private to you.</s>" +
-                "<s>some-name-2</s>" +
-                "</speak>";
+            expected = {
+                speech: "<speak>" +
+                    "<s>Here are your repos:</s>" +
+                    "<s>some-name which is private to you.</s>" +
+                    "<s>some-name-2</s>" +
+                    "</speak>",
+                type: "SSML"
+            };
             listOfRepositories = [{
                 name: "some-name",
                 private: true
@@ -33,7 +36,8 @@ describe('SSMLResponder.js', function() {
         });
         it('should call tell with the correct ssml', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0]).to.be.equal(expected);
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal(expected.speech);
+            expect(tellStub.getCall(0).args[0].type).to.be.equal(expected.type);
         });
     });
     describe('promptListOfIssuesResponse', function() {
@@ -41,11 +45,14 @@ describe('SSMLResponder.js', function() {
             expected;
         context('when the user has issues', function() {
             beforeEach(function() {
-                expected = "<speak>" +
-                    "<s>Here are the issues that are assigned to you and open:</s>" +
-                    "<s>some-title that was labeled a bug.</s>" +
-                    "<s>some-title-2</s>" +
-                    "</speak>";
+                expected = {
+                    speech: "<speak>" +
+                        "<s>Here are the issues that are assigned to you and open:</s>" +
+                        "<s>some-title that was labeled a bug.</s>" +
+                        "<s>some-title-2</s>" +
+                        "</speak>",
+                    type: "SSML"
+                };
                 listOfIssues = [{
                     title: "some-title",
                     labels: [{
@@ -58,20 +65,25 @@ describe('SSMLResponder.js', function() {
             });
             it('should call tell with the correct ssml', function() {
                 expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0]).to.be.equal(expected);
+                expect(tellStub.getCall(0).args[0].speech).to.be.equal(expected.speech);
+                expect(tellStub.getCall(0).args[0].type).to.be.equal(expected.type);
             });
         });
         context('when the user does not have issues', function() {
             beforeEach(function() {
-                expected = "<speak>" +
-                    "<s>There is currently no open issues assigned to you.</s>" +
-                    "</speak>";
+                expected = {
+                    speech: "<speak>" +
+                        "<s>There is currently no open issues assigned to you.</s>" +
+                        "</speak>",
+                    type: "SSML"
+                };
                 listOfIssues = [];
                 subject.promptListOfIssuesResponse(listOfIssues, responseMock);
             });
             it('should call tell with the correct ssml', function() {
                 expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0]).to.be.equal(expected);
+                expect(tellStub.getCall(0).args[0].speech).to.be.equal(expected.speech);
+                expect(tellStub.getCall(0).args[0].type).to.be.equal(expected.type);
             });
         });
     });

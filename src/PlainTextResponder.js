@@ -40,14 +40,9 @@ module.exports = {
         speechOutput.speech = 'I was able to create the repo successfully.';
         response.tell(speechOutput);
     },
-    promptLatestCommitResponse: function(repositoryName, committer, message, owner, response) {
-        var speech = 'The latest commit for ' + repositoryName + ' is ' + message;
-        if (owner == committer) {
-            speech += ' made by you.';
-        } else {
-            speech += ' made by ' + committer + '.';
-        }
-        speechOutput.speech = speech;
+    promptLatestCommitResponse: function(repositoryName, committer, message, response) {
+        speechOutput.speech = 'The latest commit for ' + repositoryName + ' is ' +
+            message + ' made by ' + committer + '.';
         response.tell(speechOutput);
     },
     promptSlotsErrorResponse: function(response) {

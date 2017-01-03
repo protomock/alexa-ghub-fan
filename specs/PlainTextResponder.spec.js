@@ -94,25 +94,13 @@ describe('PlainTextResponder.js', function() {
     });
 
     describe('promptLatestCommitResponse', function() {
-        context('when commiter and owner are not the same', function() {
-            beforeEach(function() {
-                subject.promptLatestCommitResponse('some-name', 'some-commiter', 'some-message', 'some-owner', responseMock);
-            });
-            it('should call tell with correct parametes', function() {
-                expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0].speech).to.be.equal('The latest commit for some-name is some-message made by some-commiter.');
-                expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
-            });
+        beforeEach(function() {
+            subject.promptLatestCommitResponse('some-name', 'some-commiter', 'some-message', responseMock);
         });
-        context('when commiter and owner are not the same', function() {
-            beforeEach(function() {
-                subject.promptLatestCommitResponse('some-name', 'some-commiter', 'some-message', 'some-commiter', responseMock);
-            });
-            it('should call tell with correct parametes', function() {
-                expect(tellStub.called).to.be.ok;
-                expect(tellStub.getCall(0).args[0].speech).to.be.equal('The latest commit for some-name is some-message made by you.');
-                expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
-            });
+        it('should call tell with correct parametes', function() {
+            expect(tellStub.called).to.be.ok;
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('The latest commit for some-name is some-message made by some-commiter.');
+            expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
 
     });

@@ -8,11 +8,22 @@ module.exports = {
     onSessionStarted: function(sessionStartedRequest, session) {
         console.log("onSessionStarted requestId: " + sessionStartedRequest.requestId +
             ", sessionId: " + session.sessionId);
-        requestHandlers.handleSessionStarted(session);
+        requestHandlers.handleSessionStarted(sessionStartedRequest, session);
+    },
+    onIntent: function (intentRequest, session, response) {
+        var intent = intentRequest.intent,
+            intentName = intentRequest.intent.name,
+            intentHandler = this.intentHandlers[intentName];
+        if (intentHandler) {
+            console.log('dispatch intent = ' + intentName);
+            intentHandler.call(this, intent, session, response);
+        } else {
+            throw 'Unsupported intent = ' + intentName;
+        }
     },
     onLaunch: function(launchRequest, session, response) {
         console.log("onLaunch requestI\d: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-        requestHandlers.handleWelcomeRequest(response);
+        requestHandlers.handleWelcomeRequest(session, response);
     },
     onSessionEnded: function(sessionEndedRequest, session) {
         console.log("onSessionEnded requestId: " + sessionEndedRequest.requestId +
