@@ -18,9 +18,58 @@ describe('RequestHandlers.js', function() {
         sessionMock = {
             user: {
                 accessToken: "some-token"
-            }
+            },
+            attributes: {}
         };
         subject = require('../src/RequestHandlers');
+    });
+
+    describe('handleSessionStarted', function() {
+        var getMyInfoStub;
+        beforeEach(function() {
+            getMyInfoStub = sinon.stub(binder.objectGraph['GitHubClient'], 'getMyInfo');
+            subject.handleSessionStarted(sessionMock);
+        });
+        afterEach(function() {
+            getMyInfoStub.restore();
+        });
+
+        it('should call GitHubClient with the correct parameters', function() {
+            expect(getMyInfoStub.called).to.be.ok;
+            expect(getMyInfoStub.getCall(0).args[0]).to.be.equal("some-token");
+            expect(typeof getMyInfoStub.getCall(0).args[1]).to.be.equal('function');
+            expect(typeof getMyInfoStub.getCall(0).args[2]).to.be.equal('object');
+        });
+        describe('onSuccess', function() {
+            var data;
+            beforeEach(function() {
+                data = {
+                    owner: 'some-owner'
+                };
+                getMyInfoStub.getCall(0).args[1](data);
+            });
+            it('should set the owner attribute', function() {
+                expect(sessionMock.attributes['owner']).to.be.equal('some-owner');
+            });
+        });
+
+        // describe('onError', function() {
+        //     var promptApiErrorResponseStub;
+        //     beforeEach(function() {
+        //         promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
+        //         getMyInfoStub.getCall(0).args[2]();
+        //     });
+        //
+        //     it('should tell the user the request was incorrect', function() {
+        //         expect(promptApiErrorResponseStub.called).to.be.ok;
+        //         expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
+        //     });
+        //     afterEach(function() {
+        //         promptApiErrorResponseStub.restore();
+        //     });
+        //
+        // });
+
     });
 
     describe('handleWelcomeRequest', function() {
@@ -265,9 +314,9 @@ describe('RequestHandlers.js', function() {
 
         context('when slots are valid', function() {
             var listAllMyOpenIssuesStub,
-                getMyInfoStub;
+                listMyRepositoriesStub;
             beforeEach(function() {
-                getMyInfoStub = sinon.stub(binder.objectGraph['GitHubClient'], 'getMyInfo');
+                listMyRepositoriesStub = sinon.stub(binder.objectGraph['GitHubClient'], 'listMyRepositories');
                 getLatestCommitStub = sinon.stub(binder.objectGraph['GitHubClient'], 'getLatestCommit');
                 provideLatestCommitSlotsStub.returns({
                     value: 'some-name'
@@ -281,24 +330,37 @@ describe('RequestHandlers.js', function() {
             });
 
             it('should call the GitHubClient with the expected values', function() {
-                expect(getMyInfoStub.called).to.be.ok;
-                expect(getMyInfoStub.getCall(0).args[0]).to.be.equal('some-token');
-                expect(typeof getMyInfoStub.getCall(0).args[1]).to.be.equal('function');
-                expect(typeof getMyInfoStub.getCall(0).args[2]).to.be.equal('function');
+                expect(listMyRepositoriesStub.called).to.be.ok;
+                expect(listMyRepositoriesStub.getCall(0).args[0]).to.be.equal('some-token');
+                expect(typeof listMyRepositoriesStub.getCall(0).args[1]).to.be.equal('function');
+                expect(typeof listMyRepositoriesStub.getCall(0).args[2]).to.be.equal('function');
             });
 
             describe('onSuccess', function() {
-                var output;
+                var output,
+                    matchStub;
                 beforeEach(function() {
-                    output = {
-                        login: "some-owner"
-                    };
-                    getMyInfoStub.getCall(0).args[1](output);
+                    matchStub = sinon.stub(binder.objectGraph['StringMatcher'], 'match');
+                    matchStub.returns('some-match');
+
+                    sessionMock.attributes['owner'] = 'some-owner';
+                    listMyRepositoriesStub.getCall(0).args[1]('some-data');
+                });
+
+                afterEach(function() {
+                    matchStub.restore();
+                });
+
+                it('should call match to find the repo name', function() {
+                    expect(matchStub.called).to.be.ok;
+                    expect(matchStub.getCall(0).args[0]).to.be.equal('some-data');
+                    expect(matchStub.getCall(0).args[1]).to.be.equal('name');
+                    expect(matchStub.getCall(0).args[2]).to.be.equal('some-name');
                 });
 
                 it('should call the GitHubClient with the expected values', function() {
                     expect(getLatestCommitStub.called).to.be.ok;
-                    expect(getLatestCommitStub.getCall(0).args[0]).to.be.equal('some-name');
+                    expect(getLatestCommitStub.getCall(0).args[0]).to.be.equal('some-match');
                     expect(getLatestCommitStub.getCall(0).args[1]).to.be.equal('some-owner');
                     expect(getLatestCommitStub.getCall(0).args[2]).to.be.equal('some-token');
                     expect(typeof getLatestCommitStub.getCall(0).args[3]).to.be.equal('function');
@@ -329,8 +391,7 @@ describe('RequestHandlers.js', function() {
                         expect(promptLatestCommitResponseStub.getCall(0).args[0]).to.be.equal('some-name');
                         expect(promptLatestCommitResponseStub.getCall(0).args[1]).to.be.equal('some-committer');
                         expect(promptLatestCommitResponseStub.getCall(0).args[2]).to.be.equal('some-message');
-                        expect(promptLatestCommitResponseStub.getCall(0).args[3]).to.be.equal('some-owner');
-                        expect(promptLatestCommitResponseStub.getCall(0).args[4]).to.be.equal(responseMock);
+                        expect(promptLatestCommitResponseStub.getCall(0).args[3]).to.be.equal(responseMock);
                     });
                 });
                 describe('getLatestCommit - onError', function() {
@@ -354,7 +415,7 @@ describe('RequestHandlers.js', function() {
                 var promptApiErrorResponseStub;
                 beforeEach(function() {
                     promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
-                    getMyInfoStub.getCall(0).args[2]();
+                    listMyRepositoriesStub.getCall(0).args[2]();
                 });
 
                 it('should tell the user the request was incorrect', function() {
@@ -368,7 +429,7 @@ describe('RequestHandlers.js', function() {
             });
 
             afterEach(function() {
-                getMyInfoStub.restore();
+                listMyRepositoriesStub.restore();
                 getLatestCommitStub.restore();
             });
         });

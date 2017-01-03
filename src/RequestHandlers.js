@@ -1,16 +1,26 @@
+const MATCHER_KEY = 'name';
+const OWNER_KEY = 'owner';
 require('dependency-binder')({
     'SlotProvider': require('./SlotProvider'),
     'GitHubClient': require('./GitHubClient'),
     'SSMLResponder': require('./SSMLResponder'),
-    'PlainTextResponder': require('./PlainTextResponder')
+    'PlainTextResponder': require('./PlainTextResponder'),
+    'StringMatcher': require('./StringMatcher'),
 });
 
 var ssmlProvider = binder.resolve('SSMLResponder');
 var slotProvider = binder.resolve('SlotProvider');
 var client = binder.resolve('GitHubClient');
 var plainTextResponder = binder.resolve('PlainTextResponder');
+var stringMatcher = binder.resolve('StringMatcher');
 
 module.exports = {
+    handleSessionStarted: function(session) {
+        var onSuccess = function(data) {
+            session.attributes[OWNER_KEY] = data.owner;
+        };
+        client.getMyInfo(session.user.accessToken, onSuccess, null);
+    },
     handleWelcomeRequest: function(response) {
         plainTextResponder.promptWelcomeResponse(response);
     },
@@ -66,14 +76,15 @@ module.exports = {
             var onError = function() {
                 plainTextResponder.promptApiErrorResponse(response);
             };
-            var onSuccess = function(output) {
-                client.getLatestCommit(latestCommitSlot.value, output.login, session.user.accessToken, function(commits) {
+            var onSuccess = function(data) {
+                var repositoryName = stringMatcher.match(data, MATCHER_KEY, latestCommitSlot.value);
+                client.getLatestCommit(repositoryName, session.attributes[OWNER_KEY], session.user.accessToken, function(commits) {
                     var latestCommit = commits[0];
-                    plainTextResponder.promptLatestCommitResponse(latestCommitSlot.value, latestCommit.commit.committer.name, latestCommit.commit.message, output.login, response);
+                    plainTextResponder.promptLatestCommitResponse(latestCommitSlot.value, latestCommit.commit.committer.name, latestCommit.commit.message, response);
                 }, onError);
             };
 
-            client.getMyInfo(session.user.accessToken, onSuccess, onError);
+            client.listMyRepositories(session.user.accessToken, onSuccess, onError);
         }
     }
 }

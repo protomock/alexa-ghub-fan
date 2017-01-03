@@ -34,18 +34,4 @@ describe('GitHubHelper', function() {
             expect(subject.prototype.constructor).to.be.equal(subject);
         });
     });
-
-    describe('eventHandlers', function() {
-        describe('onLaunch', function() {
-            var handleWelcomeRequestStub;
-            beforeEach(function() {
-                handleWelcomeRequestStub = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleWelcomeRequest');
-                subject.prototype.eventHandlers.onLaunch('LaunchRequest', 'session', 'response');
-            });
-            it('should handle the welcome request', function() {
-                expect(handleWelcomeRequestStub.called).to.be.ok;
-                expect(handleWelcomeRequestStub.getCall(0).args[0]).to.be.equal('response');
-            });
-        });
-    });
 });
