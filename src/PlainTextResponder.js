@@ -14,9 +14,15 @@ var repromptOutput = {
 };
 
 module.exports = {
+    promptUnlinkedWelcomeResponse: function(response) {
+        speechOutput.speech = "Thanks for trying out this skill, unfortunely the features I " +
+            "provide only work if you have linked your account. " +
+            "Please take a look at the card in your alexa app for more information.";
+        response.tellWithCard(speechOutput, 'Account Link Required', 'No account linked', 'LinkAccount');
+    },
     promptWelcomeResponse: function(response) {
         var whatCanIdoForYou = "What can I do for you?";
-        speechOutput.speech = "Welcome to GitHub Helper. " + whatCanIdoForYou;
+        speechOutput.speech = "Welcome to Git Voice. " + whatCanIdoForYou;
         repromptOutput.speech = "I can help with doing things such as " +
             "creating a repo or checking latest commit." +
             whatCanIdoForYou;

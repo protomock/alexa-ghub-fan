@@ -2,6 +2,9 @@ ListMyRepositoriesIntent tell me my repos
 ListMyRepositoriesIntent tell me my repositories
 ListMyRepositoriesIntent to tell me my repos
 ListMyRepositoriesIntent to tell me my repositories
+ListMyRepositoriesIntent to list my repos
+ListMyRepositoriesIntent to list my repositories
+
 
 ListAllMyOpenIssuesIntent tell me my open issues
 ListAllMyOpenIssuesIntent to tell me my open issues
@@ -15,6 +18,8 @@ CreateRepositoryIntent create repository {RepositoryName}
 CreateRepositoryIntent create repo {RepositoryName}
 CreateRepositoryIntent to create {Privacy} repository {RepositoryName}
 CreateRepositoryIntent to create {Privacy} repo {RepositoryName}
+CreateRepositoryIntent to create a {Privacy} repository {RepositoryName}
+CreateRepositoryIntent to create a {Privacy} repo {RepositoryName}
 CreateRepositoryIntent create {Privacy} repository {RepositoryName}
 CreateRepositoryIntent create {Privacy} repo {RepositoryName}
 

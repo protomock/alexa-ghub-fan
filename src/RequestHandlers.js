@@ -1,5 +1,6 @@
 const MATCHER_KEY = 'name';
 const OWNER_KEY = 'owner';
+
 require('dependency-binder')({
     'SlotProvider': require('./SlotProvider'),
     'GitHubClient': require('./GitHubClient'),
@@ -14,27 +15,12 @@ var client = binder.resolve('GitHubClient');
 var plainTextResponder = binder.resolve('PlainTextResponder');
 var stringMatcher = binder.resolve('StringMatcher');
 
-function getUserInfo(session, done) {
-    var onSuccess = function(data) {
-        session.attributes[OWNER_KEY] = data.login;
-        console.log("handleSessionStarted => session.attributes[OWNER_KEY] = " + session.attributes[OWNER_KEY]);
-        if (done) {
-            done();
-        }
-    };
-    client.getMyInfo(session.user.accessToken, onSuccess, null);
-}
-
 module.exports = {
-    handleSessionStarted: function(sessionStartedRequest, session) {
-        if (sessionStartedRequest.type != 'LaunchRequest') {
-            getUserInfo(session);
-        }
+    handleWelcomeRequest: function(response) {
+        plainTextResponder.promptWelcomeResponse(response);
     },
-    handleWelcomeRequest: function(session, response) {
-        getUserInfo(session, function() {
-            plainTextResponder.promptWelcomeResponse(response);
-        });
+    handleUnLinkedWelcomeRequest: function(response) {
+       plainTextResponder.promptUnlinkedWelcomeResponse(response);
     },
     handleHelpRequest: function(response) {
         plainTextResponder.promptHelpResponse(response);

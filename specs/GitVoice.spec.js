@@ -1,12 +1,12 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
 
-describe('GitHubHelper', function() {
+describe('GitVoice', function() {
     var subject,
         alexaSkillSpy;
     beforeEach(function() {
         process.env.APP_ID = 'some-id';
-        subject = require('../src/GitHubHelper');
+        subject = require('../src/GitVoice');
         alexaSkillSpy = sinon.spy(binder.objectGraph['AlexaSkill'], 'call');
     });
 
@@ -18,7 +18,7 @@ describe('GitHubHelper', function() {
         beforeEach(function() {
             subject();
         });
-        it('should call the constructor when instantiating GitHubHelper', function() {
+        it('should call the constructor when instantiating GitVoice', function() {
             expect(alexaSkillSpy.called).to.be.ok;
             expect(typeof alexaSkillSpy.getCall(0).args[0]).to.be.equal('object');
             expect(alexaSkillSpy.getCall(0).args[1]).to.be.equal("some-id");

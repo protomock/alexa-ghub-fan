@@ -24,52 +24,20 @@ describe('RequestHandlers.js', function() {
         subject = require('../src/RequestHandlers');
     });
 
-    describe('handleSessionStarted', function() {
-        var getMyInfoStub;
+    describe('handleUnLinkedWelcomeRequest', function() {
+        var promptUnlinkedWelcomeResponseStub;
         beforeEach(function() {
-            getMyInfoStub = sinon.stub(binder.objectGraph['GitHubClient'], 'getMyInfo');
-            subject.handleSessionStarted(sessionMock);
+            promptUnlinkedWelcomeResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptUnlinkedWelcomeResponse');
+            subject.handleUnLinkedWelcomeRequest(responseMock);
         });
         afterEach(function() {
-            getMyInfoStub.restore();
+            promptUnlinkedWelcomeResponseStub.restore();
         });
 
-        it('should call GitHubClient with the correct parameters', function() {
-            expect(getMyInfoStub.called).to.be.ok;
-            expect(getMyInfoStub.getCall(0).args[0]).to.be.equal("some-token");
-            expect(typeof getMyInfoStub.getCall(0).args[1]).to.be.equal('function');
-            expect(typeof getMyInfoStub.getCall(0).args[2]).to.be.equal('object');
+        it('should call plainTextResponder with the correct parameters', function() {
+            expect(promptUnlinkedWelcomeResponseStub.called).to.be.ok;
+            expect(promptUnlinkedWelcomeResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
         });
-        describe('onSuccess', function() {
-            var data;
-            beforeEach(function() {
-                data = {
-                    login: 'some-owner'
-                };
-                getMyInfoStub.getCall(0).args[1](data);
-            });
-            it('should set the owner attribute', function() {
-                expect(sessionMock.attributes['owner']).to.be.equal('some-owner');
-            });
-        });
-
-        // describe('onError', function() {
-        //     var promptApiErrorResponseStub;
-        //     beforeEach(function() {
-        //         promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
-        //         getMyInfoStub.getCall(0).args[2]();
-        //     });
-        //
-        //     it('should tell the user the request was incorrect', function() {
-        //         expect(promptApiErrorResponseStub.called).to.be.ok;
-        //         expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
-        //     });
-        //     afterEach(function() {
-        //         promptApiErrorResponseStub.restore();
-        //     });
-        //
-        // });
-
     });
 
     describe('handleWelcomeRequest', function() {

@@ -1,14 +1,15 @@
 require('dependency-binder')({
-    'RequestHandlers': require('./RequestHandlers')
+    'RequestHandlers': require('./RequestHandlers'),
+    'InformationFetcher': require('./InformationFetcher')
 });
 
 var requestHandlers = binder.resolve('RequestHandlers');
+var fetcher = binder.resolve('InformationFetcher');
 
 module.exports = {
     onSessionStarted: function(sessionStartedRequest, session) {
         console.log("onSessionStarted requestId: " + sessionStartedRequest.requestId +
             ", sessionId: " + session.sessionId);
-        requestHandlers.handleSessionStarted(sessionStartedRequest, session);
     },
     onIntent: function (intentRequest, session, response) {
         var intent = intentRequest.intent,
@@ -23,10 +24,17 @@ module.exports = {
     },
     onLaunch: function(launchRequest, session, response) {
         console.log("onLaunch requestI\d: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-        requestHandlers.handleWelcomeRequest(session, response);
+        requestHandlers.handleWelcomeRequest(response);
     },
     onSessionEnded: function(sessionEndedRequest, session) {
         console.log("onSessionEnded requestId: " + sessionEndedRequest.requestId +
             ", sessionId: " + session.sessionId);
+    },
+    onEngaged: function(session, response, success) {
+      if(session.user.accessToken) {
+          fetcher.getUserInformation(session, success);
+      } else {
+          requestHandlers.handleUnLinkedWelcomeRequest(response);
+      }
     }
 };

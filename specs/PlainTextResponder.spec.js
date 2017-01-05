@@ -5,16 +5,40 @@ describe('PlainTextResponder.js', function() {
     var subject,
         responseMock,
         tellStub,
-        askStub;
+        askStub,
+        tellWithCardStub;
     beforeEach(function() {
         tellStub = sinon.stub();
         askStub = sinon.stub();
+        tellWithCardStub = sinon.stub();
+
         responseMock = {
             tell: tellStub,
+            tellWithCard: tellWithCardStub,
             ask: askStub
         };
         subject = require('../src/PlainTextResponder');
     });
+
+    describe('promptUnlinkedWelcomeResponse', function() {
+        var speech;
+        beforeEach(function() {
+            speech = "Thanks for trying out this skill, unfortunely the features I " +
+                "provide only work if you have linked your account. " +
+                "Please take a look at the card in your alexa app for more information.";
+            subject.promptUnlinkedWelcomeResponse(responseMock);
+        });
+
+        it('call askWithCard with the correct parameter', function() {
+            expect(tellWithCardStub.called).to.be.ok;
+            expect(tellWithCardStub.getCall(0).args[0].speech).to.be.equal(speech);
+            expect(tellWithCardStub.getCall(0).args[0].type).to.be.equal("PlainText");
+            expect(tellWithCardStub.getCall(0).args[1]).to.be.equal('Account Link Required');
+            expect(tellWithCardStub.getCall(0).args[2]).to.be.equal('No account linked');
+            expect(tellWithCardStub.getCall(0).args[3]).to.be.equal('LinkAccount');
+        });
+    });
+
     describe('promptWelcomeResponse', function() {
         var whatCanIdoForYou,
             speechOutput,
@@ -22,7 +46,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             whatCanIdoForYou = "What can I do for you?";
             speechOutput = {
-                speech: "Welcome to GitHub Helper. " +
+                speech: "Welcome to Git Voice. " +
                     whatCanIdoForYou,
                 type: 'PlainText'
             };
