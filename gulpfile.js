@@ -12,7 +12,7 @@ gulp.task('test', () => {
 });
 
 gulp.task('create_payload', () => {
-    return gulp.src('./dist/*',{
+    gulp.src('./dist/**', {
             base: './dist'
         })
         .pipe(zip('payload.zip'))
@@ -24,12 +24,13 @@ gulp.task('setup_source', () => {
             base: './src'
         })
         .pipe(gulp.dest('./dist'));
+});
 
-    return gulp.src('./node_modules/*', {
+gulp.task('setup_dependencies', () => {
+    gulp.src('./node_modules/dependency-binder', {
             base: '.'
         })
         .pipe(gulp.dest('./dist'));
-
 });
 
-gulp.task('default', ['test', 'setup_source', 'create_payload']);
+gulp.task('default', ['test', 'setup_dependencies', 'setup_source', 'create_payload']);
