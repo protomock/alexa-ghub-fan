@@ -1,9 +1,9 @@
 require('dependency-binder')({
-    'GitVoiceFactory': require('./GitVoiceFactory')
+    'GHubFanFactory': require('./GHubFanFactory')
 });
 
 module.exports.handler = function(event, context) {
-    var GitVoiceFactory = binder.resolve('GitVoiceFactory');
-    var GitVoice = GitVoiceFactory.createInstance();
-    GitVoice.execute(event, context);
+    var GHubFanFactory = binder.resolve('GHubFanFactory');
+    var GHubFan = GHubFanFactory.createInstance();
+    GHubFan.execute(event, context);
 };

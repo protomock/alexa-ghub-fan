@@ -22,7 +22,7 @@ module.exports = {
     },
     promptWelcomeResponse: function(response) {
         var whatCanIdoForYou = "What can I do for you?";
-        speechOutput.speech = "Welcome to Git Voice. " + whatCanIdoForYou;
+        speechOutput.speech = "Welcome to GHub Fan. " + whatCanIdoForYou;
         repromptOutput.speech = "I can help with doing things such as " +
             "creating a repo or checking latest commit." +
             whatCanIdoForYou;

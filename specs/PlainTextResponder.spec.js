@@ -46,7 +46,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             whatCanIdoForYou = "What can I do for you?";
             speechOutput = {
-                speech: "Welcome to Git Voice. " +
+                speech: "Welcome to GHub Fan. " +
                     whatCanIdoForYou,
                 type: 'PlainText'
             };

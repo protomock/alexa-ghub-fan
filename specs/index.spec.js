@@ -27,10 +27,10 @@ describe('index.js', function(){
             gitHubHelperFactoryMock = {
               createInstance: createInstanceStub
             };
-            binder.bind('GitVoiceFactory',gitHubHelperFactoryMock);
+            binder.bind('GHubFanFactory',gitHubHelperFactoryMock);
             subject.handler('event', 'context');
         });
-        it('should call get a new instance of GitVoice', function(){
+        it('should call get a new instance of GHubFan', function(){
             expect(createInstanceStub.called).to.be.ok;
         });
         it('should call execute with provided event and context', function(){
