@@ -30,11 +30,15 @@ module.exports = {
         console.log("onSessionEnded requestId: " + sessionEndedRequest.requestId +
             ", sessionId: " + session.sessionId);
     },
-    onEngaged: function(session, response, success) {
-      if(session.user.accessToken) {
-          fetcher.getUserInformation(session, success);
-      } else {
+    onInvocation: function(session, response, success) {
+      var error = function () {
           requestHandlers.handleUnLinkedWelcomeRequest(response);
+      };
+
+      if(session.user.accessToken) {
+          fetcher.getUserInformation(session, success, error);
+      } else {
+          error();
       }
     }
 };

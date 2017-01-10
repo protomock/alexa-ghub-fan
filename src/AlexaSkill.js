@@ -63,7 +63,7 @@ AlexaSkill.prototype.eventHandlers = {
      */
     onSessionEnded: function(sessionEndedRequest, session) {},
 
-    onEngaged: function(session, response, done) {}
+    onInvocation: function(session, response, done) {}
 };
 
 /**
@@ -92,7 +92,7 @@ AlexaSkill.prototype.execute = function(event, context) {
 
         var response = new Response(context, event.session),
             self = this;
-        this.eventHandlers.onEngaged(event.session, response, function(session) {
+        this.eventHandlers.onInvocation(event.session, response, function(session) {
             // Route the request to the proper handler which may have been overriden.
             var requestHandler = self.requestHandlers[event.request.type];
             requestHandler.call(self, event, context, response);

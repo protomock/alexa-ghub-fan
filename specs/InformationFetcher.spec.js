@@ -20,7 +20,7 @@ describe('InformationFetcher', function() {
                 attributes: {}
             };
             successCallBackStub = sinon.stub();
-            subject.getUserInformation(sessionMock, successCallBackStub);
+            subject.getUserInformation(sessionMock, successCallBackStub, 'error');
         });
 
         afterEach(function() {
@@ -32,7 +32,7 @@ describe('InformationFetcher', function() {
             expect(getMyInfoStub.called).to.be.ok;
             expect(getMyInfoStub.getCall(0).args[0]).to.be.equal('some-token');
             expect(typeof getMyInfoStub.getCall(0).args[1]).to.be.equal('function');
-            expect(getMyInfoStub.getCall(0).args[2]).to.not.be.ok;
+            expect(getMyInfoStub.getCall(0).args[2]).to.be.equal('error');
         });
 
         describe('onSuccess', function() {

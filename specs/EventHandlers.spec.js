@@ -17,7 +17,7 @@ describe('EventHandlers.js', function() {
             expect(handleWelcomeRequestStub.getCall(0).args[0]).to.be.equal('response');
         });
     });
-    describe('onEngaged', function() {
+    describe('onInvocation', function() {
         var sessionMock;
         context('when user has accessToken', function() {
             var getUserInformationStub;
@@ -28,7 +28,7 @@ describe('EventHandlers.js', function() {
                   }
                 };
                 getUserInformationStub = sinon.stub(binder.objectGraph['InformationFetcher'], 'getUserInformation');
-                subject.onEngaged(sessionMock,'response', 'success');
+                subject.onInvocation(sessionMock,'response', 'success');
             });
             afterEach(function() {
                getUserInformationStub.restore();
@@ -38,6 +38,7 @@ describe('EventHandlers.js', function() {
                 expect(getUserInformationStub.called).to.be.ok;
                 expect(getUserInformationStub.getCall(0).args[0]).to.be.equal(sessionMock);
                 expect(getUserInformationStub.getCall(0).args[1]).to.be.equal('success');
+                expect(typeof getUserInformationStub.getCall(0).args[2]).to.be.equal('function');
             });
         });
 
@@ -49,7 +50,7 @@ describe('EventHandlers.js', function() {
                   user: {}
                 };
                 handleUnLinkedWelcomeRequestStub = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleUnLinkedWelcomeRequest');
-                subject.onEngaged(sessionMock, 'response', 'success');
+                subject.onInvocation(sessionMock, 'response', 'success');
             });
             afterEach(function() {
                handleUnLinkedWelcomeRequestStub.restore();

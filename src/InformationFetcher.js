@@ -7,11 +7,12 @@ require('dependency-binder')({
 var client = binder.resolve('GitHubClient');
 
 module.exports = {
-    getUserInformation: function(session, success) {
+    getUserInformation: function(session, success, error) {
         var onSuccess = function(data) {
             session.attributes[OWNER_KEY] = data.login;
             success(session);
         };
-        client.getMyInfo(session.user.accessToken, onSuccess, null);
+
+        client.getMyInfo(session.user.accessToken, onSuccess, error);
     }
 }
