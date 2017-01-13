@@ -26,7 +26,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             speech = 'Thanks for trying out this skill, unfortunely the features I ' +
                 'provide only work if you have linked your account. ' +
-                'Please take a look at the card in your alexa app for more information.';
+                'Please take a look at the card in your alexa app for more information. ';
             subject.promptUnlinkedWelcomeResponse(responseMock);
         });
 
@@ -45,15 +45,15 @@ describe('PlainTextResponder.js', function() {
             speechOutput,
             repromptOutput;
         beforeEach(function() {
-            whatCanIdoForYou = 'What can I do for you?';
+            whatCanIdoForYou = 'What can I do for you? ';
             speechOutput = {
-                speech: 'Welcome to GHub Fan. ' +
+                speech: 'Welcome to Repo Head. ' +
                     whatCanIdoForYou,
                 type: 'PlainText'
             };
             repromptOutput = {
                 speech: 'I can help with doing things such as ' +
-                    'creating a repo or checking latest commit.' +
+                    'creating a repo or checking latest commit. ' +
                     whatCanIdoForYou,
                 type: 'PlainText'
             };
@@ -73,14 +73,14 @@ describe('PlainTextResponder.js', function() {
             speechOutput,
             repromptOutput;
         beforeEach(function() {
-            whatCanIdoForYou = 'What can I do for you?';
+            whatCanIdoForYou = 'What can I do for you? ';
             repromptOutput = {
                 speech: whatCanIdoForYou,
                 type: 'PlainText'
             };
             speechOutput = {
                 speech: 'I can help with doing things such as ' +
-                    'creating a repo or checking latest commit.' +
+                    'creating a repo or checking latest commit. ' +
                     whatCanIdoForYou,
                 type: 'PlainText'
             };
@@ -112,7 +112,7 @@ describe('PlainTextResponder.js', function() {
         });
         it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0].speech).to.be.equal('I was able to create the repo successfully.');
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('I was able to create the repo successfully. ');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
 
@@ -124,7 +124,7 @@ describe('PlainTextResponder.js', function() {
         });
         it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0].speech).to.be.equal('The latest commit for some-name is some-message made by some-commiter.');
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('The latest commit for some-name is some-message made by some-commiter. ');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
 
@@ -135,9 +135,9 @@ describe('PlainTextResponder.js', function() {
         });
         it('should call tell with correct parameters', function() {
             expect(askStub.called).to.be.ok;
-            expect(askStub.getCall(0).args[0].speech).to.be.equal('I don\'t think I heard you quite right. Can you try again?');
+            expect(askStub.getCall(0).args[0].speech).to.be.equal('I don\'t think I heard you quite right. Can you try again? ');
             expect(askStub.getCall(0).args[0].type).to.be.equal('PlainText');
-            expect(askStub.getCall(0).args[1].speech).to.be.equal('I\'m still trying to work out the kinks. Please try again.');
+            expect(askStub.getCall(0).args[1].speech).to.be.equal('I\'m still trying to work out the kinks. Please try again. ');
             expect(askStub.getCall(0).args[1].type).to.be.equal('PlainText');
         });
     });
@@ -147,7 +147,7 @@ describe('PlainTextResponder.js', function() {
         });
         it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0].speech).to.be.equal('There seems to be an issue right now. Try again later.');
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('There seems to be an issue right now. Try again later. ');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
     });
@@ -158,7 +158,7 @@ describe('PlainTextResponder.js', function() {
         });
         it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0].speech).to.be.equal('There are no commits for some-repo.');
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('There are no commits for some-repo. ');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
     });
@@ -169,7 +169,7 @@ describe('PlainTextResponder.js', function() {
         });
         it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0].speech).to.be.equal('Repository some-repo already exists.');
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('Repository some-repo already exists. ');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
     });
@@ -180,7 +180,7 @@ describe('PlainTextResponder.js', function() {
         });
         it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0].speech).to.be.equal('It seems there maybe an issue with your account linking. Please relink your account and try again.');
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('It seems there maybe an issue with your account linking. Please relink your account and try again. ');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
     });
