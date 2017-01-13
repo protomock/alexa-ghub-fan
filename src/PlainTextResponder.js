@@ -58,5 +58,9 @@ module.exports = {
     promptApiErrorResponse: function(response) {
         speechOutput.speech = 'There seems to be an issue right now. Try again later.';
         response.tell(speechOutput);
+    },
+    promptNoCommitsResponse: function(repositoryName, response) {
+      speechOutput.speech = 'There are no commits for ' + repositoryName;
+      response.tell(speechOutput);
     }
 }

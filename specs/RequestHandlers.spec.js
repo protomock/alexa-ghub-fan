@@ -363,19 +363,38 @@ describe('RequestHandlers.js', function() {
                     });
                 });
                 describe('getLatestCommit - onError', function() {
-                    var promptApiErrorResponseStub;
-                    beforeEach(function() {
-                        promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
-                        getLatestCommitStub.getCall(0).args[4]();
-                    });
+                    context('when statusCode is other than 409', function() {
+                        var promptApiErrorResponseStub;
+                        beforeEach(function() {
+                            promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse');
+                            getLatestCommitStub.getCall(0).args[4]('error', 500);
+                        });
 
-                    it('should tell the user the request was incorrect', function() {
-                        expect(promptApiErrorResponseStub.called).to.be.ok;
-                        expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
-                    });
+                        it('should tell the user the request was incorrect', function() {
+                            expect(promptApiErrorResponseStub.called).to.be.ok;
+                            expect(promptApiErrorResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
+                        });
 
-                    afterEach(function() {
-                        promptApiErrorResponseStub.restore();
+                        afterEach(function() {
+                            promptApiErrorResponseStub.restore();
+                        });
+                    });
+                    context('when statusCode is 409', function() {
+                        var promptNoCommitsResponseStub;
+                        beforeEach(function() {
+                            promptNoCommitsResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptNoCommitsResponse');
+                            getLatestCommitStub.getCall(0).args[4]('error', 409);
+                        });
+
+                        it('should tell the user the request was incorrect', function() {
+                            expect(promptNoCommitsResponseStub.called).to.be.ok;
+                            expect(promptNoCommitsResponseStub.getCall(0).args[0]).to.be.equal("some-match");
+                            expect(promptNoCommitsResponseStub.getCall(0).args[1]).to.be.equal(responseMock);
+                        });
+
+                        afterEach(function() {
+                            promptNoCommitsResponseStub.restore();
+                        });
                     });
                 });
             });

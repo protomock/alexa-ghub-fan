@@ -98,7 +98,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             subject.promptStopResponse(responseMock);
         });
-        it('should call tell with correct parametes', function() {
+        it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
             expect(tellStub.getCall(0).args[0].speech).to.be.equal('Goodbye.');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
@@ -109,7 +109,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             subject.promptCreateRepositoryReponse(responseMock);
         });
-        it('should call tell with correct parametes', function() {
+        it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
             expect(tellStub.getCall(0).args[0].speech).to.be.equal('I was able to create the repo successfully.');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
@@ -121,7 +121,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             subject.promptLatestCommitResponse('some-name', 'some-commiter', 'some-message', responseMock);
         });
-        it('should call tell with correct parametes', function() {
+        it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
             expect(tellStub.getCall(0).args[0].speech).to.be.equal('The latest commit for some-name is some-message made by some-commiter.');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
@@ -132,7 +132,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             subject.promptSlotsErrorResponse(responseMock)
         });
-        it('should call tell with correct parametes', function() {
+        it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
             expect(tellStub.getCall(0).args[0].speech).to.be.equal('I don\'t think I heard you quite right. Can you try again?');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
@@ -142,9 +142,20 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             subject.promptApiErrorResponse(responseMock)
         });
-        it('should call tell with correct parametes', function() {
+        it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
             expect(tellStub.getCall(0).args[0].speech).to.be.equal('There seems to be an issue right now. Try again later.');
+            expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
+        });
+    });
+
+    describe('provideApiError', function() {
+        beforeEach(function() {
+            subject.promptNoCommitsResponse("some-name", responseMock)
+        });
+        it('should call tell with correct parameters', function() {
+            expect(tellStub.called).to.be.ok;
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('There are no commits for some-name');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
     });

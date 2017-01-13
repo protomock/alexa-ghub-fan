@@ -20,7 +20,7 @@ module.exports = {
         plainTextResponder.promptWelcomeResponse(response);
     },
     handleUnLinkedWelcomeRequest: function(response) {
-       plainTextResponder.promptUnlinkedWelcomeResponse(response);
+        plainTextResponder.promptUnlinkedWelcomeResponse(response);
     },
     handleHelpRequest: function(response) {
         plainTextResponder.promptHelpResponse(response);
@@ -79,7 +79,14 @@ module.exports = {
                 client.getLatestCommit(repositoryName, session.attributes[OWNER_KEY], session.user.accessToken, function(commits) {
                     var latestCommit = commits[0];
                     plainTextResponder.promptLatestCommitResponse(repositoryName, latestCommit.commit.committer.name, latestCommit.commit.message, response);
-                }, onError);
+                }, function(error, statusCode) {
+                    console.log('ERROR: ' + error + ' StatusCode: ' + statusCode);
+                    if (statusCode == 409) {
+                        plainTextResponder.promptNoCommitsResponse(repositoryName, response);
+                    } else {
+                        onError(error);
+                    }
+                });
             };
 
             client.listMyRepositories(session.user.accessToken, onSuccess, onError);
