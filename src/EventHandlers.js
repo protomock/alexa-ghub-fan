@@ -11,7 +11,7 @@ module.exports = {
         console.log("onSessionStarted requestId: " + sessionStartedRequest.requestId +
             ", sessionId: " + session.sessionId);
     },
-    onIntent: function (intentRequest, session, response) {
+    onIntent: function(intentRequest, session, response) {
         var intent = intentRequest.intent,
             intentName = intentRequest.intent.name,
             intentHandler = this.intentHandlers[intentName];
@@ -31,14 +31,10 @@ module.exports = {
             ", sessionId: " + session.sessionId);
     },
     onInvocation: function(session, response, success) {
-      var error = function () {
-          requestHandlers.handleUnLinkedWelcomeRequest(response);
-      };
-
-      if(session.user.accessToken) {
-          fetcher.getUserInformation(session, success, error);
-      } else {
-          error();
-      }
+        if (session.user.accessToken) {
+            fetcher.getUserInformation(session, response, success);
+        } else {
+            requestHandlers.handleUnLinkedWelcomeRequest(response);
+        }
     }
 };

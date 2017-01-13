@@ -18,27 +18,30 @@ describe('EventHandlers.js', function() {
         });
     });
     describe('onInvocation', function() {
-        var sessionMock;
+        var sessionMock,
+            getUserInformationStub;
+        beforeEach(function() {
+            getUserInformationStub = sinon.stub(binder.objectGraph['InformationFetcher'], 'getUserInformation');
+        });
+        afterEach(function() {
+            getUserInformationStub.restore();
+        });
+
         context('when user has accessToken', function() {
-            var getUserInformationStub;
             beforeEach(function() {
                 sessionMock = {
-                  user: {
-                    accessToken: 'some-token'
-                  }
+                    user: {
+                        accessToken: 'some-token'
+                    }
                 };
-                getUserInformationStub = sinon.stub(binder.objectGraph['InformationFetcher'], 'getUserInformation');
-                subject.onInvocation(sessionMock,'response', 'success');
-            });
-            afterEach(function() {
-               getUserInformationStub.restore();
+                subject.onInvocation(sessionMock, 'response', 'success');
             });
 
             it('should handle the welcome request', function() {
                 expect(getUserInformationStub.called).to.be.ok;
                 expect(getUserInformationStub.getCall(0).args[0]).to.be.equal(sessionMock);
-                expect(getUserInformationStub.getCall(0).args[1]).to.be.equal('success');
-                expect(typeof getUserInformationStub.getCall(0).args[2]).to.be.equal('function');
+                expect(getUserInformationStub.getCall(0).args[1]).to.be.equal('response');
+                expect(getUserInformationStub.getCall(0).args[2]).to.be.equal('success');
             });
         });
 
@@ -47,18 +50,16 @@ describe('EventHandlers.js', function() {
             var handleUnLinkedWelcomeRequestStub;
             beforeEach(function() {
                 sessionMock = {
-                  user: {}
+                    user: {}
                 };
                 handleUnLinkedWelcomeRequestStub = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleUnLinkedWelcomeRequest');
                 subject.onInvocation(sessionMock, 'response', 'success');
             });
-            afterEach(function() {
-               handleUnLinkedWelcomeRequestStub.restore();
-            });
 
-            it('should handle the welcome request', function() {
+            it('should not get user information', function() {
                 expect(handleUnLinkedWelcomeRequestStub.called).to.be.ok;
                 expect(handleUnLinkedWelcomeRequestStub.getCall(0).args[0]).to.be.equal('response');
+
             });
         });
     });

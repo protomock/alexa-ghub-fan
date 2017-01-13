@@ -10,9 +10,19 @@ describe('InformationFetcher', function() {
     describe('getUserInformation', function() {
         var getMyInfoStub,
             sessionMock,
-            successCallBackStub;
+            successCallBackStub,
+            responseMock;
         beforeEach(function() {
-            getMyInfoStub = sinon.stub(binder.objectGraph['GitHubClient'], 'getMyInfo');
+            getMyInfoStub = sinon.stub();
+
+            gitHubClientMock = {
+                getMyInfo: getMyInfoStub,
+            };
+            createInstanceStub = sinon.stub(binder.objectGraph['GitHubClientFactory'], 'createInstance');
+            createInstanceStub.returns(gitHubClientMock);
+
+            responseMock = {};
+
             sessionMock = {
                 user: {
                     accessToken: 'some-token'
@@ -20,11 +30,11 @@ describe('InformationFetcher', function() {
                 attributes: {}
             };
             successCallBackStub = sinon.stub();
-            subject.getUserInformation(sessionMock, successCallBackStub, 'error');
+            subject.getUserInformation(sessionMock, responseMock, successCallBackStub);
         });
 
         afterEach(function() {
-           getMyInfoStub.restore();
+            createInstanceStub.restore();
         });
 
 
@@ -32,14 +42,13 @@ describe('InformationFetcher', function() {
             expect(getMyInfoStub.called).to.be.ok;
             expect(getMyInfoStub.getCall(0).args[0]).to.be.equal('some-token');
             expect(typeof getMyInfoStub.getCall(0).args[1]).to.be.equal('function');
-            expect(getMyInfoStub.getCall(0).args[2]).to.be.equal('error');
         });
 
         describe('onSuccess', function() {
             var data;
             beforeEach(function() {
                 data = {
-                  login: 'some-login'
+                    login: 'some-login'
                 };
                 getMyInfoStub.getCall(0).args[1](data);
             });

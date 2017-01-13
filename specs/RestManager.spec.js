@@ -174,6 +174,8 @@ describe('RestManager.js', function() {
                         });
                         it('should call the error callback', function() {
                             expect(error.called).to.be.ok;
+                            expect(error.getCall(0).args[0].some).to.be.equal('data');
+                            expect(error.getCall(0).args[1]).to.be.equal(500);
                         });
                     });
                 });

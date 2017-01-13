@@ -46,7 +46,7 @@ module.exports = {
                 if (res.statusCode >= 200 && res.statusCode < 300) {
                     onSuccess(body);
                 } else {
-                    onError(body);
+                    onError(body, res.statusCode);
                 }
             });
         });
