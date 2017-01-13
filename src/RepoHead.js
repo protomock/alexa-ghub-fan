@@ -7,14 +7,14 @@ require('dependency-binder')({
 });
 var AlexaSkill = binder.resolve('AlexaSkill');
 
-var GHubFan = function() {
+var RepoHead = function() {
     AlexaSkill.call(this, APP_ID);
 }
-GHubFan.prototype = Object.create(AlexaSkill.prototype);
-GHubFan.prototype.constructor = GHubFan;
+RepoHead.prototype = Object.create(AlexaSkill.prototype);
+RepoHead.prototype.constructor = RepoHead;
 
-GHubFan.prototype.eventHandlers = binder.resolve('EventHandlers');
-GHubFan.prototype.intentHandlers = binder.resolve('IntentHandlers');
+RepoHead.prototype.eventHandlers = binder.resolve('EventHandlers');
+RepoHead.prototype.intentHandlers = binder.resolve('IntentHandlers');
 
 
-module.exports = GHubFan
+module.exports = RepoHead
