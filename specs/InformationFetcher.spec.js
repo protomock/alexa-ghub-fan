@@ -48,16 +48,46 @@ describe('InformationFetcher', function() {
             var data;
             beforeEach(function() {
                 data = {
-                    login: 'some-login'
+                    login: 'some-login',
+                    name: "some name"
                 };
                 getMyInfoStub.getCall(0).args[1](data);
             });
             it('should set the session attribute for owner', function() {
                 expect(sessionMock.attributes['owner']).to.be.equal('some-login');
             });
+            it('should set the session attribute for name', function() {
+                expect(sessionMock.attributes['name']).to.be.equal('some');
+            });
             it('should set the session attribute for owner', function() {
                 expect(successCallBackStub.called).to.be.ok;
                 expect(successCallBackStub.getCall(0).args[0]).to.be.equal(sessionMock);
+            });
+
+            context('when data.name is not populated', function(){
+                beforeEach(function(){
+                  data = {
+                      login: 'some-login',
+                      name: null
+                  };
+                  getMyInfoStub.getCall(0).args[1](data);
+                });
+                it('should set the session attribute for name', function() {
+                    expect(sessionMock.attributes['name']).to.not.be.ok;
+                });
+            });
+
+            context('when data.name is populated with empty string', function(){
+                beforeEach(function(){
+                  data = {
+                      login: 'some-login',
+                      name: ""
+                  };
+                  getMyInfoStub.getCall(0).args[1](data);
+                });
+                it('should set the session attribute for name', function() {
+                    expect(sessionMock.attributes['name']).to.not.be.ok;
+                });
             });
         });
     });

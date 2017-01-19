@@ -47,7 +47,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             whatCanIdoForYou = 'What can I do for you? ';
             speechOutput = {
-                speech: 'Welcome to Repo Head. ' +
+                speech: 'Hey firstName, Welcome to Repo Head. ' +
                     whatCanIdoForYou,
                 type: 'PlainText'
             };
@@ -57,7 +57,7 @@ describe('PlainTextResponder.js', function() {
                     whatCanIdoForYou,
                 type: 'PlainText'
             };
-            subject.promptWelcomeResponse(responseMock);
+            subject.promptWelcomeResponse('firstName', responseMock);
         });
         it('call ask with the correct parameter', function() {
             expect(askStub.called).to.be.ok;
@@ -65,6 +65,21 @@ describe('PlainTextResponder.js', function() {
             expect(askStub.getCall(0).args[0].type).to.be.equal(speechOutput.type);
             expect(askStub.getCall(0).args[1].speech).to.be.equal(repromptOutput.speech);
             expect(askStub.getCall(0).args[1].type).to.be.equal(repromptOutput.type);
+        });
+
+        context('when first name is null', function() {
+            beforeEach(function() {
+               speechOutput.speech = 'Welcome to Repo Head. ' + whatCanIdoForYou;
+               subject.promptWelcomeResponse(null, responseMock);
+            });
+
+            it('call ask with the correct parameter', function() {
+                expect(askStub.called).to.be.ok;
+                expect(askStub.getCall(0).args[0].speech).to.be.equal(speechOutput.speech);
+                expect(askStub.getCall(0).args[0].type).to.be.equal(speechOutput.type);
+                expect(askStub.getCall(0).args[1].speech).to.be.equal(repromptOutput.speech);
+                expect(askStub.getCall(0).args[1].type).to.be.equal(repromptOutput.type);
+            });
         });
     });
 

@@ -44,11 +44,13 @@ describe('RequestHandlers.js', function() {
         var promptWelcomeResponseStub;
         beforeEach(function() {
             promptWelcomeResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptWelcomeResponse');
-            subject.handleWelcomeRequest(responseMock);
+            sessionMock.attributes['name'] = 'some-name';
+            subject.handleWelcomeRequest(sessionMock, responseMock);
         });
         it('should prompt the user as expected', function() {
             expect(promptWelcomeResponseStub.called).to.be.ok;
-            expect(promptWelcomeResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
+            expect(promptWelcomeResponseStub.getCall(0).args[0]).to.be.equal('some-name');
+            expect(promptWelcomeResponseStub.getCall(0).args[1]).to.be.equal(responseMock);
         });
     });
 

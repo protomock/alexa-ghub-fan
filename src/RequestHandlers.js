@@ -1,4 +1,5 @@
 const MATCHER_KEY = 'name';
+const NAME_KEY = 'name';
 const OWNER_KEY = 'owner';
 
 require('dependency-binder')({
@@ -16,8 +17,8 @@ var plainTextResponder = binder.resolve('PlainTextResponder');
 var stringMatcher = binder.resolve('StringMatcher');
 
 module.exports = {
-    handleWelcomeRequest: function(response) {
-        plainTextResponder.promptWelcomeResponse(response);
+    handleWelcomeRequest: function(session, response) {
+        plainTextResponder.promptWelcomeResponse(session.attributes[NAME_KEY], response);
     },
     handleUnLinkedWelcomeRequest: function(response) {
        plainTextResponder.promptUnlinkedWelcomeResponse(response);

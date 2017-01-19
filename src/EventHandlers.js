@@ -24,7 +24,7 @@ module.exports = {
     },
     onLaunch: function(launchRequest, session, response) {
         console.log("onLaunch requestI\d: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
-        requestHandlers.handleWelcomeRequest(response);
+        requestHandlers.handleWelcomeRequest(session, response);
     },
     onSessionEnded: function(sessionEndedRequest, session) {
         console.log("onSessionEnded requestId: " + sessionEndedRequest.requestId +

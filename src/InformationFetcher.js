@@ -1,4 +1,5 @@
 const OWNER_KEY = 'owner';
+const NAME_KEY = 'name';
 
 require('dependency-binder')({
     'GitHubClientFactory': require('./GitHubClientFactory')
@@ -11,6 +12,7 @@ module.exports = {
         var client = GitHubClientFactory.createInstance(response);
         var onSuccess = function(data) {
             session.attributes[OWNER_KEY] = data.login;
+            session.attributes[NAME_KEY] = data.name ? data.name.split(" ")[0] : null;
             success(session);
         };
 
