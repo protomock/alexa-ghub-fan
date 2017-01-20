@@ -36,11 +36,12 @@ module.exports = {
             plainTextResponder.promptSlotsErrorResponse(response);
         } else {
             var client = GitHubClientFactory.createInstance(response);
+            var repositoryName = slots.RepositoryName.value;
             var onSuccess = function() {
-                plainTextResponder.promptCreateRepositoryResponse(response);
+                plainTextResponder.promptCreateRepositoryResponse(repositoryName, response);
             };
 
-            client.createRepository(slots.RepositoryName.value, slots.Privacy.value, session.user.accessToken, onSuccess);
+            client.createRepository(repositoryName, slots.Privacy.value, session.user.accessToken, onSuccess);
         }
     },
     handleListRepositoryRequest: function(session, response) {

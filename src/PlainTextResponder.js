@@ -22,7 +22,7 @@ module.exports = {
     },
     promptWelcomeResponse: function(firstName, response) {
         var whatCanIdoForYou = 'What can I do for you? ';
-        speechOutput.speech = (firstName ? 'Hey ' + firstName + ', ': '') + 'Welcome to Repo Head. ' + whatCanIdoForYou;
+        speechOutput.speech = (firstName ? 'Hi ' + firstName + ', ': '') + 'Repo Head here. ' + whatCanIdoForYou;
         repromptOutput.speech = 'I can help with doing things such as ' +
             'creating a repo or checking latest commit. ' +
             whatCanIdoForYou;
@@ -39,11 +39,11 @@ module.exports = {
         response.ask(speechOutput, repromptOutput);
     },
     promptStopResponse: function(response) {
-        speechOutput.speech = 'Goodbye.';
+        speechOutput.speech = 'It was good talking with you. Happy developing! ';
         response.tell(speechOutput);
     },
-    promptCreateRepositoryResponse: function(response) {
-        speechOutput.speech = 'I was able to create the repo successfully. ';
+    promptCreateRepositoryResponse: function(repositoryName, response) {
+        speechOutput.speech = 'Alright, I created ' + repositoryName + ' for you. ';
         response.tell(speechOutput);
     },
     promptLatestCommitResponse: function(repositoryName, committer, message, response) {

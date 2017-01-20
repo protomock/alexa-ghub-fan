@@ -47,7 +47,7 @@ describe('PlainTextResponder.js', function() {
         beforeEach(function() {
             whatCanIdoForYou = 'What can I do for you? ';
             speechOutput = {
-                speech: 'Hey firstName, Welcome to Repo Head. ' +
+                speech: 'Hi firstName, Repo Head here. ' +
                     whatCanIdoForYou,
                 type: 'PlainText'
             };
@@ -69,7 +69,7 @@ describe('PlainTextResponder.js', function() {
 
         context('when first name is null', function() {
             beforeEach(function() {
-               speechOutput.speech = 'Welcome to Repo Head. ' + whatCanIdoForYou;
+               speechOutput.speech = 'Repo Head here. ' + whatCanIdoForYou;
                subject.promptWelcomeResponse(null, responseMock);
             });
 
@@ -116,18 +116,18 @@ describe('PlainTextResponder.js', function() {
         });
         it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0].speech).to.be.equal('Goodbye.');
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('It was good talking with you. Happy developing! ');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
     });
 
     describe('promptCreateRepositoryResponse', function() {
         beforeEach(function() {
-            subject.promptCreateRepositoryResponse(responseMock);
+            subject.promptCreateRepositoryResponse('some-name',responseMock);
         });
         it('should call tell with correct parameters', function() {
             expect(tellStub.called).to.be.ok;
-            expect(tellStub.getCall(0).args[0].speech).to.be.equal('I was able to create the repo successfully. ');
+            expect(tellStub.getCall(0).args[0].speech).to.be.equal('Alright, I created some-name for you. ');
             expect(tellStub.getCall(0).args[0].type).to.be.equal('PlainText');
         });
 

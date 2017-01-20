@@ -127,7 +127,8 @@ describe('RequestHandlers.js', function() {
 
                 it('should tell the user the request was successful', function() {
                     expect(promptCreateRepositoryResponseStub.called).to.be.ok;
-                    expect(promptCreateRepositoryResponseStub.getCall(0).args[0]).to.be.equal(responseMock);
+                    expect(promptCreateRepositoryResponseStub.getCall(0).args[0]).to.be.equal('some-name');
+                    expect(promptCreateRepositoryResponseStub.getCall(0).args[1]).to.be.equal(responseMock);
                 });
                 afterEach(function() {
                     promptCreateRepositoryResponseStub.restore();

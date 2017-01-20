@@ -27,7 +27,7 @@ gulp.task('setup_source', () => {
 });
 
 gulp.task('setup_dependencies', () => {
-    gulp.src('./node_modules/dependency-binder', {
+    gulp.src('./node_modules/dependency-binder/*', {
             base: '.'
         })
         .pipe(gulp.dest('./dist'));
