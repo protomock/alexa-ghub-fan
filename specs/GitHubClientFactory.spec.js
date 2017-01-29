@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
 
 
 describe('GitHubClientFactory.js', function() {
@@ -9,8 +10,7 @@ describe('GitHubClientFactory.js', function() {
         tellStub,
         sessionMock;
     beforeEach(function() {
-        delete require.cache[require.resolve('../src/GitHubClientFactory')];
-        subject = require('../src/GitHubClientFactory');
+        subject = mockInjector.subject('../src/GitHubClientFactory');
     });
     //TODO: Look at making test stronger
     describe('createInstance', function() {

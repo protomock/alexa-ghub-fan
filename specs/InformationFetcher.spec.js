@@ -1,10 +1,19 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
+var gitHubClientFactory = require('../src/GitHubClientFactory')
 
 describe('InformationFetcher', function() {
-    var subject;
+    var subject,
+        createInstanceStub;
     beforeEach(function() {
-        subject = require('../src/InformationFetcher');
+        createInstanceStub = sinon.stub(gitHubClientFactory, 'createInstance');
+        mockInjector.inject('../src/GitHubClientFactory', gitHubClientFactory);
+        subject = mockInjector.subject('../src/InformationFetcher');
+    });
+
+    afterEach(function() {
+        createInstanceStub.restore();
     });
 
     describe('getUserInformation', function() {
@@ -18,7 +27,6 @@ describe('InformationFetcher', function() {
             gitHubClientMock = {
                 getMyInfo: getMyInfoStub,
             };
-            createInstanceStub = sinon.stub(binder.objectGraph['GitHubClientFactory'], 'createInstance');
             createInstanceStub.returns(gitHubClientMock);
 
             responseMock = {};
@@ -31,10 +39,6 @@ describe('InformationFetcher', function() {
             };
             successCallBackStub = sinon.stub();
             subject.getUserInformation(sessionMock, responseMock, successCallBackStub);
-        });
-
-        afterEach(function() {
-            createInstanceStub.restore();
         });
 
 
@@ -64,26 +68,26 @@ describe('InformationFetcher', function() {
                 expect(successCallBackStub.getCall(0).args[0]).to.be.equal(sessionMock);
             });
 
-            context('when data.name is not populated', function(){
-                beforeEach(function(){
-                  data = {
-                      login: 'some-login',
-                      name: null
-                  };
-                  getMyInfoStub.getCall(0).args[1](data);
+            context('when data.name is not populated', function() {
+                beforeEach(function() {
+                    data = {
+                        login: 'some-login',
+                        name: null
+                    };
+                    getMyInfoStub.getCall(0).args[1](data);
                 });
                 it('should set the session attribute for name', function() {
                     expect(sessionMock.attributes['name']).to.not.be.ok;
                 });
             });
 
-            context('when data.name is populated with empty string', function(){
-                beforeEach(function(){
-                  data = {
-                      login: 'some-login',
-                      name: ""
-                  };
-                  getMyInfoStub.getCall(0).args[1](data);
+            context('when data.name is populated with empty string', function() {
+                beforeEach(function() {
+                    data = {
+                        login: 'some-login',
+                        name: ""
+                    };
+                    getMyInfoStub.getCall(0).args[1](data);
                 });
                 it('should set the session attribute for name', function() {
                     expect(sessionMock.attributes['name']).to.not.be.ok;

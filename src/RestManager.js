@@ -3,10 +3,7 @@ const USER_AGENT = process.env.USER_AGENT;
 const GET = "GET";
 const POST = "POST";
 
-require('dependency-binder')({
-    https: require('https'),
-});
-var https = binder.resolve('https');
+var https = require('https');
 
 function createQueryString(accessToken, data) {
     var qs = "?";

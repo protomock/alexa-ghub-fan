@@ -1,18 +1,13 @@
 const PRIVATE = 'private';
 
-require('dependency-binder')({
-    'RestManager': require('./RestManager'),
-    'GitHubClientErrorHandler': require('./GitHubClientErrorHandler')
-});
-
 var restManager,
     errorHandlers,
     self;
 
 function GitHubClient(response) {
     this.response = response;
-    errorHandlers = binder.resolve('GitHubClientErrorHandler');
-    restManager = binder.resolve('RestManager');
+    errorHandlers = require('./GitHubClientErrorHandler');
+    restManager = require('./RestManager');
     self = this;
 }
 

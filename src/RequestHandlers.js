@@ -2,26 +2,18 @@ const MATCHER_KEY = 'name';
 const NAME_KEY = 'name';
 const OWNER_KEY = 'owner';
 
-require('dependency-binder')({
-    'SlotProvider': require('./SlotProvider'),
-    'GitHubClientFactory': require('./GitHubClientFactory'),
-    'SSMLResponder': require('./SSMLResponder'),
-    'PlainTextResponder': require('./PlainTextResponder'),
-    'StringMatcher': require('./StringMatcher'),
-});
-
-var ssmlProvider = binder.resolve('SSMLResponder');
-var slotProvider = binder.resolve('SlotProvider');
-var GitHubClientFactory = binder.resolve('GitHubClientFactory');
-var plainTextResponder = binder.resolve('PlainTextResponder');
-var stringMatcher = binder.resolve('StringMatcher');
+var slotProvider = require('./SlotProvider');
+var GitHubClientFactory = require('./GitHubClientFactory');
+var ssmlProvider = require('./SSMLResponder');
+var plainTextResponder = require('./PlainTextResponder');
+var stringMatcher = require('./StringMatcher');
 
 module.exports = {
     handleWelcomeRequest: function(session, response) {
         plainTextResponder.promptWelcomeResponse(session.attributes[NAME_KEY], response);
     },
     handleUnLinkedWelcomeRequest: function(response) {
-       plainTextResponder.promptUnlinkedWelcomeResponse(response);
+        plainTextResponder.promptUnlinkedWelcomeResponse(response);
     },
     handleHelpRequest: function(response) {
         plainTextResponder.promptHelpResponse(response);

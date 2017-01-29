@@ -1,5 +1,3 @@
-require('dependency-binder')();
-
 //Iterative Levenshtein distance
 function distanceBetween(s, t) {
     if (s == t) return 0;

@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
 
 describe('PlainTextResponder.js', function() {
     var subject,
@@ -7,6 +8,7 @@ describe('PlainTextResponder.js', function() {
         tellStub,
         askStub,
         tellWithCardStub;
+
     beforeEach(function() {
         tellStub = sinon.stub();
         askStub = sinon.stub();
@@ -17,8 +19,7 @@ describe('PlainTextResponder.js', function() {
             tellWithCard: tellWithCardStub,
             ask: askStub
         };
-        delete require.cache[require.resolve('../src/PlainTextResponder')];
-        subject = require('../src/PlainTextResponder');
+        subject = mockInjector.subject('../src/PlainTextResponder');
     });
 
     describe('promptUnlinkedWelcomeResponse', function() {

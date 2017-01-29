@@ -1,9 +1,17 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
+var spaceConverter = require('../src/SpaceConverter');
 
 describe('SlotProvider.js', function() {
     var subject,
         intent;
+    before(function() {
+        convertSpacesToDashesStub = sinon.stub(spaceConverter, 'convertSpacesToDashes');
+        mockInjector.inject('../src/SpaceConverter', spaceConverter);
+        subject = mockInjector.subject('../src/SlotProvider');
+    });
+
     beforeEach(function() {
         intent = {
             slots: {
@@ -11,8 +19,8 @@ describe('SlotProvider.js', function() {
                 Privacy: {}
             }
         };
-        subject = require('../src/SlotProvider');
     });
+
     describe('provideCreateRepositorySlots', function() {
         context('when the slots are provided and have a value', function() {
             var actual;
@@ -48,23 +56,18 @@ describe('SlotProvider.js', function() {
 
     describe('provideLatestCommitSlots', function() {
         context('when the slots are provided and have a value', function() {
-            var actual,
-                convertSpacesToDashesStub;
+            var actual;
             beforeEach(function() {
                 intent.slots.RepositoryName = {
                     name: 'Some-name',
                     value: 'some value'
                 };
-                convertSpacesToDashesStub = sinon.stub(binder.objectGraph['SpaceConverter'], 'convertSpacesToDashes');
                 convertSpacesToDashesStub.returns('some-value');
                 actual = subject.provideLatestCommitSlots(intent);
             });
             it('should return the expected value', function() {
                 expect(actual.name).to.be.equal('Some-name');
                 expect(actual.value).to.be.equal('some-value');
-            });
-            afterEach(function() {
-                convertSpacesToDashesStub.restore();
             });
         });
         context('when the slots are not provided', function() {

@@ -1,7 +1,4 @@
-require('dependency-binder')({
-    'AlexaSkill': require('./AlexaSkill')
-});
-var AlexaSkill = binder.resolve('AlexaSkill');
+var AlexaSkill = require('./AlexaSkill');
 
 var speechOutput = {
     speech: '',

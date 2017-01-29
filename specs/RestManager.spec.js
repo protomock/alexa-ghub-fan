@@ -1,5 +1,7 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
+var https = require('https');
 
 describe('RestManager.js', function() {
     var subject,
@@ -8,10 +10,9 @@ describe('RestManager.js', function() {
         writeStub,
         endStub;
     beforeEach(function() {
-        delete require.cache[require.resolve('../src/RestManager')];
         process.env.USER_AGENT = 'some-user-agent';
-        subject = require('../src/RestManager');
-        requestStub = sinon.stub(binder.objectGraph['https'], 'request');
+        subject = mockInjector.subject('../src/RestManager');
+        requestStub = sinon.stub(https, 'request');
         writeStub = sinon.stub();
         endStub = sinon.stub();
 

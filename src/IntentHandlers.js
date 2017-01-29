@@ -1,8 +1,5 @@
-require('dependency-binder')({
-    'RequestHandlers': require('./RequestHandlers'),
-});
 
-var requestHandlers = binder.resolve('RequestHandlers');
+var requestHandlers = require('./RequestHandlers');
 
 module.exports = {
     "ListMyRepositoriesIntent": function(intent, session, response) {

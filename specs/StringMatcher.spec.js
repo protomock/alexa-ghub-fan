@@ -1,10 +1,11 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
 
 describe('StringMatcher.js', function() {
     var subject;
     beforeEach(function() {
-        subject = require('../src/StringMatcher');
+        subject = mockInjector.subject('../src/StringMatcher');
     });
 
     describe('distanceBetween', function() {

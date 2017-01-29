@@ -1,28 +1,34 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
+var plainTextResponder = require('../src/PlainTextResponder');
 
 describe('GitHubClientErrorHandler.js', function() {
     var subject,
         responseMock,
-        promptApiErrorResponseStub;
-    beforeEach(function() {
-        delete require.cache[require.resolve('../src/GitHubClientErrorHandler')];
-        subject = require('../src/GitHubClientErrorHandler');
-        responseMock = {};
+        promptApiErrorResponseStub,
+        promptRepoEmptyErrorStub;
 
-        promptApiErrorResponseStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptApiErrorResponse')
+    beforeEach(function() {
+        promptApiErrorResponseStub = sinon.stub(plainTextResponder, 'promptApiErrorResponse');
+        promptRepoEmptyErrorStub = sinon.stub(plainTextResponder, 'promptRepoEmptyError');
+        promptRepoAlreadyExistsErrorStub = sinon.stub(plainTextResponder, 'promptRepoAlreadyExistsError');
+        mockInjector.inject('../src/PlainTextResponder', plainTextResponder);
+
+        subject = mockInjector.subject('../src/GitHubClientErrorHandler');
+        responseMock = {};
 
     });
 
     afterEach(function() {
         promptApiErrorResponseStub.restore();
+        promptRepoEmptyErrorStub.restore();
+        promptRepoAlreadyExistsErrorStub.restore();
     })
 
     describe('handleLatestCommitError', function() {
         context('when the error is a 409', function() {
-            var promptRepoEmptyErrorStub;
             beforeEach(function() {
-                promptRepoEmptyErrorStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptRepoEmptyError');
                 subject.handleLatestCommitError('some-repo', responseMock, 'some-error', 409);
             });
 
@@ -68,9 +74,7 @@ describe('GitHubClientErrorHandler.js', function() {
     });
     describe('handleCreateRepositoryError', function() {
         context('when the error is a 422', function() {
-            var promptRepoAlreadyExistsErrorStub;
             beforeEach(function() {
-                promptRepoAlreadyExistsErrorStub = sinon.stub(binder.objectGraph['PlainTextResponder'], 'promptRepoAlreadyExistsError');
                 subject.handleCreateRepositoryError('some-repo', responseMock, 'some-error', 422);
             });
 

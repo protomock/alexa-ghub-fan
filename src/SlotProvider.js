@@ -1,8 +1,4 @@
-require('dependency-binder')({
-    'SpaceConverter': require('./SpaceConverter')
-});
-
-var spaceConverter = binder.resolve('SpaceConverter');
+var spaceConverter = require('./SpaceConverter');
 
 module.exports = {
     provideCreateRepositorySlots: function(intent) {

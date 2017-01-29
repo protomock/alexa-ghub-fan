@@ -1,17 +1,30 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
+var requestHandlers = require('../src/RequestHandlers');
 
 describe('IntentHandlers.js', function() {
-    var subject;
-    beforeEach(function() {
-        subject = require('../src/IntentHandlers');
+    var subject,
+        handleListRepositoryRequest,
+        handleCreateRepositoryRequest,
+        handleListAllMyOpenIssuesRequest,
+        handleGetLatestCommitRequest,
+        handleHelpRequestStub,
+        handleStopIntent;
+    before(function() {
+        handleListRepositoryRequest = sinon.stub(requestHandlers, 'handleListRepositoryRequest');
+        handleCreateRepositoryRequest = sinon.stub(requestHandlers, 'handleCreateRepositoryRequest');
+        handleListAllMyOpenIssuesRequest = sinon.stub(requestHandlers, 'handleListAllMyOpenIssuesRequest');
+        handleGetLatestCommitRequest = sinon.stub(requestHandlers, 'handleGetLatestCommitRequest');
+        handleHelpRequestStub = sinon.stub(requestHandlers, 'handleHelpRequest');
+        handleStopIntent = sinon.stub(requestHandlers, 'handleStopIntent');
+
+        mockInjector.inject('../src/RequestHandlers', requestHandlers);
+        subject = mockInjector.subject('../src/IntentHandlers');
     });
 
     describe('ListMyRepositoriesIntent', function() {
-        var handleListRepositoryRequest;
         beforeEach(function() {
-            handleListRepositoryRequest = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleListRepositoryRequest');
-
             subject['ListMyRepositoriesIntent']('intent', 'session', 'response')
         });
 
@@ -22,10 +35,7 @@ describe('IntentHandlers.js', function() {
         });
     });
     describe('CreateRepositoryIntent', function() {
-        var handleCreateRepositoryRequest;
         beforeEach(function() {
-            handleCreateRepositoryRequest = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleCreateRepositoryRequest');
-
             subject['CreateRepositoryIntent']('intent', 'session', 'response')
         });
 
@@ -38,10 +48,7 @@ describe('IntentHandlers.js', function() {
     });
 
     describe('ListAllMyOpenIssuesIntent', function() {
-        var handleListAllMyOpenIssuesRequest;
         beforeEach(function() {
-            handleListAllMyOpenIssuesRequest = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleListAllMyOpenIssuesRequest');
-
             subject['ListAllMyOpenIssuesIntent']('intent', 'session', 'response')
         });
 
@@ -53,9 +60,7 @@ describe('IntentHandlers.js', function() {
     });
 
     describe('GetLatestCommitIntent', function() {
-        var handleGetLatestCommitRequest;
         beforeEach(function() {
-            handleGetLatestCommitRequest = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleGetLatestCommitRequest');
             subject['GetLatestCommitIntent']('intent', 'session', 'response')
         });
 
@@ -68,9 +73,7 @@ describe('IntentHandlers.js', function() {
     });
 
     describe('AMAZON.HelpIntent', function() {
-        var handleHelpRequestStub;
         beforeEach(function() {
-            handleHelpRequestStub = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleHelpRequest');
             subject['AMAZON.HelpIntent']('intent', 'session', 'response')
         });
 
@@ -81,9 +84,7 @@ describe('IntentHandlers.js', function() {
     });
 
     describe('AMAZON.StopIntent', function() {
-        var handleStopIntent;
         beforeEach(function() {
-            handleStopIntent = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleStopIntent');
             subject['AMAZON.StopIntent']('intent', 'session', 'response')
         });
 
@@ -91,24 +92,16 @@ describe('IntentHandlers.js', function() {
             expect(handleStopIntent.called).to.be.ok;
             expect(handleStopIntent.getCall(0).args[0]).to.be.equal('response');
         });
-        afterEach(function() {
-          handleStopIntent.restore();
-        });
     });
 
     describe('AMAZON.CancelIntent', function() {
-        var handleStopIntent;
         beforeEach(function() {
-            handleStopIntent = sinon.stub(binder.objectGraph['RequestHandlers'], 'handleStopIntent');
             subject['AMAZON.CancelIntent']('intent', 'session', 'response')
         });
 
         it('should handle the stop request', function() {
             expect(handleStopIntent.called).to.be.ok;
             expect(handleStopIntent.getCall(0).args[0]).to.be.equal('response');
-        });
-        afterEach(function() {
-          handleStopIntent.restore();
         });
     });
 });

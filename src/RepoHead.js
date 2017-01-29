@@ -1,11 +1,5 @@
 const APP_ID = process.env.APP_ID;
-
-require('dependency-binder')({
-    'AlexaSkill': require('./AlexaSkill'),
-    'IntentHandlers': require('./IntentHandlers'),
-    'EventHandlers': require('./EventHandlers')
-});
-var AlexaSkill = binder.resolve('AlexaSkill');
+var AlexaSkill = require('./AlexaSkill');
 
 var RepoHead = function() {
     AlexaSkill.call(this, APP_ID);
@@ -13,8 +7,8 @@ var RepoHead = function() {
 RepoHead.prototype = Object.create(AlexaSkill.prototype);
 RepoHead.prototype.constructor = RepoHead;
 
-RepoHead.prototype.eventHandlers = binder.resolve('EventHandlers');
-RepoHead.prototype.intentHandlers = binder.resolve('IntentHandlers');
+RepoHead.prototype.eventHandlers = require('./IntentHandlers');
+RepoHead.prototype.intentHandlers = require('./EventHandlers');
 
 
 module.exports = RepoHead

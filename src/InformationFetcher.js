@@ -1,11 +1,7 @@
 const OWNER_KEY = 'owner';
 const NAME_KEY = 'name';
 
-require('dependency-binder')({
-    'GitHubClientFactory': require('./GitHubClientFactory')
-});
-
-var GitHubClientFactory = binder.resolve('GitHubClientFactory');
+var GitHubClientFactory = require('./GitHubClientFactory');
 
 module.exports = {
     getUserInformation: function(session, response, success) {

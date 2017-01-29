@@ -1,13 +1,18 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
+var alexaSkill = require('../src/AlexaSkill');
 
 describe('RepoHead', function() {
     var subject,
         alexaSkillSpy;
     beforeEach(function() {
         process.env.APP_ID = 'some-id';
-        subject = require('../src/RepoHead');
-        alexaSkillSpy = sinon.spy(binder.objectGraph['AlexaSkill'], 'call');
+        alexaSkillSpy = sinon.spy(alexaSkill, 'call');
+        mockInjector.inject('AlexaSkill', alexaSkill);
+        mockInjector.inject('../src/IntentHandlers','Intent-Handlers');
+        mockInjector.inject('../src/EventHandlers','Event-Handlers');
+        subject = mockInjector.subject('../src/RepoHead');
     });
 
     afterEach(function() {
@@ -27,8 +32,8 @@ describe('RepoHead', function() {
 
     describe('prototype', function() {
         it('should extend AlexaSkill', function() {
-            expect(typeof subject.prototype.eventHandlers).to.be.equal('object');
-            expect(typeof subject.prototype.intentHandlers).to.be.equal('object');
+            expect(subject.prototype.eventHandlers).to.be.equal('Intent-Handlers');
+            expect(subject.prototype.intentHandlers).to.be.equal('Event-Handlers');
         });
         it('should set the constructor', function() {
             expect(subject.prototype.constructor).to.be.equal(subject);

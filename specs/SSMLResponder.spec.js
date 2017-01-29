@@ -1,16 +1,22 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
+var AlexaSkill = require('../src/AlexaSkill');
 
 describe('SSMLResponder.js', function() {
     var subject,
         responseMock,
         tellStub;
+    before(function() {
+        mockInjector.inject('../src/AlexaSkill', AlexaSkill);
+        subject = mockInjector.subject('../src/SSMLResponder');
+    });
+
     beforeEach(function() {
         tellStub = sinon.stub();
         responseMock = {
             tell: tellStub
         }
-        subject = require('../src/SSMLResponder');
     });
 
     describe('promptListOfRepositoriesResponse', function() {

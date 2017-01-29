@@ -1,21 +1,43 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
+var restManager = require('../src/RestManager');
+var gitHubClientErrorHandler = require('../src/GitHubClientErrorHandler');
 
 describe('GitHubClient.js', function() {
     var subject,
-        responseMock;
-    beforeEach(function() {
-        GitHubClient = require('../src/GitHubClient');
-        responseMock = {};
-        subject = new GitHubClient(responseMock);
+        responseMock,
+        makeRequestStub,
+        handleCreateRepositoryErrorStub,
+        handleListMyRepositoriesErrorStub,
+        handleListAllMyOpenIssuesErrorStub,
+        handleGetMyInfoErrorStub,
+        handleLatestCommitErrorStub;
 
-        makeRequestStub = sinon.stub(binder.objectGraph['RestManager'], 'makeRequest');
+    beforeEach(function() {
+        makeRequestStub = sinon.stub(restManager, 'makeRequest');
+        mockInjector.inject('../src/RestManager', restManager);
+
+        handleCreateRepositoryErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleCreateRepositoryError');
+        handleListMyRepositoriesErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleListMyRepositoriesError');
+        handleListAllMyOpenIssuesErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleListAllMyOpenIssuesError');
+        handleGetMyInfoErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleGetMyInfoError');
+        handleLatestCommitErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleLatestCommitError');
+        mockInjector.inject('../src/GitHubClientErrorHandler', gitHubClientErrorHandler);
+
+        responseMock = {};
+        GitHubClient = mockInjector.subject('../src/GitHubClient');
+        subject = new GitHubClient(responseMock);
     });
 
     afterEach(function() {
         makeRequestStub.restore();
+        handleCreateRepositoryErrorStub.restore();
+        handleListMyRepositoriesErrorStub.restore();
+        handleListAllMyOpenIssuesErrorStub.restore();
+        handleGetMyInfoErrorStub.restore();
+        handleLatestCommitErrorStub.restore();
     });
-
 
     describe('createRepository', function() {
         var data;
@@ -75,10 +97,7 @@ describe('GitHubClient.js', function() {
         });
 
         describe('onError', function() {
-            var handleCreateRepositoryErrorStub;
             beforeEach(function() {
-                handleCreateRepositoryErrorStub = sinon.stub(binder.objectGraph['GitHubClientErrorHandler'], 'handleCreateRepositoryError');
-
                 subject.createRepository('some-name', 'private', 'some-token', 'onSuccess', 'onError');
                 makeRequestStub.getCall(0).args[5]('some-error', 'some-status');
             });
@@ -109,9 +128,7 @@ describe('GitHubClient.js', function() {
         });
 
         describe('onError', function() {
-            var handleListMyRepositoriesErrorStub;
             beforeEach(function() {
-                handleListMyRepositoriesErrorStub = sinon.stub(binder.objectGraph['GitHubClientErrorHandler'], 'handleListMyRepositoriesError');
                 makeRequestStub.getCall(0).args[5]('some-error', 'some-status');
             });
 
@@ -139,9 +156,7 @@ describe('GitHubClient.js', function() {
         });
 
         describe('onError', function() {
-            var handleListAllMyOpenIssuesErrorStub;
             beforeEach(function() {
-                handleListAllMyOpenIssuesErrorStub = sinon.stub(binder.objectGraph['GitHubClientErrorHandler'], 'handleListAllMyOpenIssuesError');
                 makeRequestStub.getCall(0).args[5]('some-error', 'some-status');
             });
 
@@ -168,9 +183,7 @@ describe('GitHubClient.js', function() {
             expect(typeof makeRequestStub.getCall(0).args[5]).to.be.equal('function');
         });
         describe('onError', function() {
-            var handleGetMyInfoErrorStub;
             beforeEach(function() {
-                handleGetMyInfoErrorStub = sinon.stub(binder.objectGraph['GitHubClientErrorHandler'], 'handleGetMyInfoError');
                 makeRequestStub.getCall(0).args[5]('some-error', 'some-status');
             });
 
@@ -198,9 +211,7 @@ describe('GitHubClient.js', function() {
         });
 
         describe('onError', function() {
-            var handleLatestCommitErrorStub;
             beforeEach(function() {
-                handleLatestCommitErrorStub = sinon.stub(binder.objectGraph['GitHubClientErrorHandler'], 'handleLatestCommitError');
                 makeRequestStub.getCall(0).args[5]('some-error', 'some-status');
             });
 
@@ -212,6 +223,5 @@ describe('GitHubClient.js', function() {
                 expect(handleLatestCommitErrorStub.getCall(0).args[3]).to.be.equal('some-status');
             });
         });
-
     });
 });

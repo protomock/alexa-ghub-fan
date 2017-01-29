@@ -1,7 +1,4 @@
-require('dependency-binder')({
-    'PlainTextResponder': require('./PlainTextResponder'),
-});
-var plainTextResponder = binder.resolve('PlainTextResponder');
+var plainTextResponder = require('./PlainTextResponder');
 
 module.exports = {
     handleLatestCommitError: function(repositoryName, response, error, statusCode) {

@@ -1,10 +1,5 @@
-require('dependency-binder')({
-    'RequestHandlers': require('./RequestHandlers'),
-    'InformationFetcher': require('./InformationFetcher')
-});
-
-var requestHandlers = binder.resolve('RequestHandlers');
-var fetcher = binder.resolve('InformationFetcher');
+var requestHandlers = require('./RequestHandlers');
+var fetcher = require('./InformationFetcher');
 
 module.exports = {
     onSessionStarted: function(sessionStartedRequest, session) {

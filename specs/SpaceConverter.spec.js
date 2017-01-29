@@ -1,10 +1,11 @@
 var expect = require('chai').expect;
 var sinon = require('sinon');
+var mockInjector = require('mock-injector')(__dirname);
 
 describe('SpaceConverter.js', function() {
     var subject;
     beforeEach(function() {
-        subject = require('../src/SpaceConverter');
+        subject = mockInjector.subject('../src/SpaceConverter');
     });
     describe('convertSpacesToDashes', function() {
         var actual,
