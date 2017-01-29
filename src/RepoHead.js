@@ -7,8 +7,8 @@ var RepoHead = function() {
 RepoHead.prototype = Object.create(AlexaSkill.prototype);
 RepoHead.prototype.constructor = RepoHead;
 
-RepoHead.prototype.eventHandlers = require('./IntentHandlers');
-RepoHead.prototype.intentHandlers = require('./EventHandlers');
+RepoHead.prototype.eventHandlers = require('./EventHandlers');
+RepoHead.prototype.intentHandlers = require('./IntentHandlers');
 
 
 module.exports = RepoHead

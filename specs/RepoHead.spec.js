@@ -32,8 +32,8 @@ describe('RepoHead', function() {
 
     describe('prototype', function() {
         it('should extend AlexaSkill', function() {
-            expect(subject.prototype.eventHandlers).to.be.equal('Intent-Handlers');
-            expect(subject.prototype.intentHandlers).to.be.equal('Event-Handlers');
+            expect(subject.prototype.eventHandlers).to.be.equal('Event-Handlers');
+            expect(subject.prototype.intentHandlers).to.be.equal('Intent-Handlers');
         });
         it('should set the constructor', function() {
             expect(subject.prototype.constructor).to.be.equal(subject);
