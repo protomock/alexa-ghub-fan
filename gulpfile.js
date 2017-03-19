@@ -1,36 +1,32 @@
-const gulp = require('gulp');
-const zip = require('gulp-zip');
-const mocha = require('gulp-mocha');
+var gulp = require('gulp');
+var $ = require('gulp-load-plugins')();
 
 gulp.task('test', () => {
-    gulp.src('specs/*', {
+    return gulp.src('specs/*', {
             read: false
         })
-        .pipe(mocha({
-            reporter: 'spec'
+        .pipe($.mocha({
+            reporter: 'dot',
+            bail: true
         }))
 });
 
-gulp.task('create_payload', () => {
-    gulp.src('./dist/**', {
+gulp.task('zip_and_upload', ['setup_source'], () => {
+    return gulp.src('./dist/**', {
             base: './dist'
         })
-        .pipe(zip('payload.zip'))
-        .pipe(gulp.dest('.'));
+        .pipe($.zip('payload.zip'))
+        .pipe($.awslambda({
+            FunctionName: "GitHubHelper",
+            Role: process.env.LAMBDA_ROLE
+        }))
 });
 
-gulp.task('setup_source', () => {
-    gulp.src('./src/*', {
+gulp.task('setup_source', ['test'], () => {
+    return gulp.src('./src/*', {
             base: './src'
         })
         .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('setup_dependencies', () => {
-    gulp.src('./node_modules/mock-injector/*', {
-            base: '.'
-        })
-        .pipe(gulp.dest('./dist'));
-});
-
-gulp.task('default', ['test', 'setup_dependencies', 'setup_source', 'create_payload']);
+gulp.task('default', ['zip_and_upload'])
