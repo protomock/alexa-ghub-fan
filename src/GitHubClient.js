@@ -1,14 +1,10 @@
 const PRIVATE = 'private';
 
-var restManager,
-    errorHandlers,
-    self;
+var errorHandlerFactory = require('./ErrorHandlerFactory'),
+    restManager = require('./RestManager');
 
 function GitHubClient(response) {
-    this.response = response;
-    errorHandlers = require('./GitHubClientErrorHandler');
-    restManager = require('./RestManager');
-    self = this;
+    this.errorHandler = errorHandlerFactory.createGitHubErrorHandler(response)
 }
 
 GitHubClient.prototype = {
@@ -22,33 +18,23 @@ GitHubClient.prototype = {
             has_downloads: true
         };
         var onError = function(error, statusCode) {
-            console.log(error + " => " + statusCode);
-            errorHandlers.handleCreateRepositoryError(name, self.response, error, statusCode);
-        };
+            this.errorHandler.handleCreateRepositoryError(name, error, statusCode);
+        }
         restManager.makeRequest('POST', '/user/repos', data, accessToken, onSuccess, onError);
     },
     listMyRepositories: function(accessToken, onSuccess) {
-        var onError = function(error, statusCode) {
-            errorHandlers.handleListMyRepositoriesError(self.response, error, statusCode);
-        };
-        restManager.makeRequest('GET', '/user/repos', null, accessToken, onSuccess, onError);
+        restManager.makeRequest('GET', '/user/repos', null, accessToken, onSuccess,this.errorHandler.handleListMyRepositoriesError);
     },
     listAllMyOpenIssues: function(accessToken, onSuccess) {
-        var onError = function(error, statusCode) {
-            errorHandlers.handleListAllMyOpenIssuesError(self.response, error, statusCode);
-        };
-        restManager.makeRequest('GET', '/issues', null, accessToken, onSuccess, onError);
+        restManager.makeRequest('GET', '/issues', null, accessToken, onSuccess, this.errorHandler.handleListAllMyOpenIssuesError);
     },
     getMyInfo: function(accessToken, onSuccess) {
-        var onError = function(error, statusCode) {
-            errorHandlers.handleGetMyInfoError(self.response, error, statusCode);
-        };
-        restManager.makeRequest('GET', '/user', null, accessToken, onSuccess, onError);
+        restManager.makeRequest('GET', '/user', null, accessToken, onSuccess, this.errorHandler.handleGetMyInfoError);
     },
     getLatestCommit: function(name, owner, accessToken, onSuccess) {
         var path = '/repos/' + owner + '/' + name + '/commits';
         var onError = function(error, statusCode) {
-            errorHandlers.handleLatestCommitError(name, self.response, error, statusCode);
+            this.errorHandler.handleLatestCommitError(name, error, statusCode);
         };
         restManager.makeRequest('GET', path, null, accessToken, onSuccess, onError);
     }

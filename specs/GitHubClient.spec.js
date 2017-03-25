@@ -2,7 +2,8 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var mockInjector = require('mock-injector')(__dirname);
 var restManager = require('../src/RestManager');
-var gitHubClientErrorHandler = require('../src/GitHubClientErrorHandler');
+var GitHubClientErrorHandler = require('../src/GitHubClientErrorHandler');
+var errorHandlerFactory = require('../src/ErrorHandlerFactory');
 
 describe('GitHubClient.js', function() {
     var subject,
@@ -12,18 +13,23 @@ describe('GitHubClient.js', function() {
         handleListMyRepositoriesErrorStub,
         handleListAllMyOpenIssuesErrorStub,
         handleGetMyInfoErrorStub,
-        handleLatestCommitErrorStub;
+        handleLatestCommitErrorStub,
+        gitHubClientErrorHandler;
 
     beforeEach(function() {
         makeRequestStub = sinon.stub(restManager, 'makeRequest');
         mockInjector.inject('../src/RestManager', restManager);
 
+
+        gitHubClientErrorHandler = Object.create(GitHubClientErrorHandler.prototype);
         handleCreateRepositoryErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleCreateRepositoryError');
         handleListMyRepositoriesErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleListMyRepositoriesError');
         handleListAllMyOpenIssuesErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleListAllMyOpenIssuesError');
         handleGetMyInfoErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleGetMyInfoError');
         handleLatestCommitErrorStub = sinon.stub(gitHubClientErrorHandler, 'handleLatestCommitError');
-        mockInjector.inject('../src/GitHubClientErrorHandler', gitHubClientErrorHandler);
+
+        sinon.stub(errorHandlerFactory, 'createGitHubErrorHandler').returns(gitHubClientErrorHandler);
+        mockInjector.inject('../src/ErrorHandlerFactory', errorHandlerFactory);
 
         responseMock = {};
         GitHubClient = mockInjector.subject('../src/GitHubClient');
@@ -37,6 +43,11 @@ describe('GitHubClient.js', function() {
         handleListAllMyOpenIssuesErrorStub.restore();
         handleGetMyInfoErrorStub.restore();
         handleLatestCommitErrorStub.restore();
+        errorHandlerFactory.createGitHubErrorHandler.restore();
+    });
+
+    it("should create a GitHubClientErrorHandler", function(){
+        expect(errorHandlerFactory.createGitHubErrorHandler.calledWithExactly(responseMock)).to.be.ok;
     });
 
     describe('createRepository', function() {
@@ -99,15 +110,14 @@ describe('GitHubClient.js', function() {
         describe('onError', function() {
             beforeEach(function() {
                 subject.createRepository('some-name', 'private', 'some-token', 'onSuccess', 'onError');
-                makeRequestStub.getCall(0).args[5]('some-error', 'some-status');
+                makeRequestStub.getCall(0).args[5].bind(subject)('some-error', 'some-status');
             });
 
             it('should call the error handler with the correct parameters', function() {
                 expect(handleCreateRepositoryErrorStub.called).to.be.ok;
                 expect(handleCreateRepositoryErrorStub.getCall(0).args[0]).to.be.equal('some-name');
-                expect(handleCreateRepositoryErrorStub.getCall(0).args[1]).to.be.equal(responseMock);
-                expect(handleCreateRepositoryErrorStub.getCall(0).args[2]).to.be.equal('some-error');
-                expect(handleCreateRepositoryErrorStub.getCall(0).args[3]).to.be.equal('some-status');
+                expect(handleCreateRepositoryErrorStub.getCall(0).args[1]).to.be.equal('some-error');
+                expect(handleCreateRepositoryErrorStub.getCall(0).args[2]).to.be.equal('some-status');
             });
         });
 
@@ -134,9 +144,8 @@ describe('GitHubClient.js', function() {
 
             it('should call the error handler with the correct parameters', function() {
                 expect(handleListMyRepositoriesErrorStub.called).to.be.ok;
-                expect(handleListMyRepositoriesErrorStub.getCall(0).args[0]).to.be.equal(responseMock);
-                expect(handleListMyRepositoriesErrorStub.getCall(0).args[1]).to.be.equal('some-error');
-                expect(handleListMyRepositoriesErrorStub.getCall(0).args[2]).to.be.equal('some-status');
+                expect(handleListMyRepositoriesErrorStub.getCall(0).args[0]).to.be.equal('some-error');
+                expect(handleListMyRepositoriesErrorStub.getCall(0).args[1]).to.be.equal('some-status');
             });
         });
     });
@@ -162,9 +171,8 @@ describe('GitHubClient.js', function() {
 
             it('should call the error handler with the correct parameters', function() {
                 expect(handleListAllMyOpenIssuesErrorStub.called).to.be.ok;
-                expect(handleListAllMyOpenIssuesErrorStub.getCall(0).args[0]).to.be.equal(responseMock);
-                expect(handleListAllMyOpenIssuesErrorStub.getCall(0).args[1]).to.be.equal('some-error');
-                expect(handleListAllMyOpenIssuesErrorStub.getCall(0).args[2]).to.be.equal('some-status');
+                expect(handleListAllMyOpenIssuesErrorStub.getCall(0).args[0]).to.be.equal('some-error');
+                expect(handleListAllMyOpenIssuesErrorStub.getCall(0).args[1]).to.be.equal('some-status');
             });
         });
     });
@@ -189,9 +197,8 @@ describe('GitHubClient.js', function() {
 
             it('should call the error handler with the correct parameters', function() {
                 expect(handleGetMyInfoErrorStub.called).to.be.ok;
-                expect(handleGetMyInfoErrorStub.getCall(0).args[0]).to.be.equal(responseMock);
-                expect(handleGetMyInfoErrorStub.getCall(0).args[1]).to.be.equal('some-error');
-                expect(handleGetMyInfoErrorStub.getCall(0).args[2]).to.be.equal('some-status');
+                expect(handleGetMyInfoErrorStub.getCall(0).args[0]).to.be.equal('some-error');
+                expect(handleGetMyInfoErrorStub.getCall(0).args[1]).to.be.equal('some-status');
             });
         });
     });
@@ -212,15 +219,14 @@ describe('GitHubClient.js', function() {
 
         describe('onError', function() {
             beforeEach(function() {
-                makeRequestStub.getCall(0).args[5]('some-error', 'some-status');
+                makeRequestStub.getCall(0).args[5].bind(subject)('some-error', 'some-status');
             });
 
             it('should call the error handler with the correct parameters', function() {
                 expect(handleLatestCommitErrorStub.called).to.be.ok;
                 expect(handleLatestCommitErrorStub.getCall(0).args[0]).to.be.equal('some-name');
-                expect(handleLatestCommitErrorStub.getCall(0).args[1]).to.be.equal(responseMock);
-                expect(handleLatestCommitErrorStub.getCall(0).args[2]).to.be.equal('some-error');
-                expect(handleLatestCommitErrorStub.getCall(0).args[3]).to.be.equal('some-status');
+                expect(handleLatestCommitErrorStub.getCall(0).args[1]).to.be.equal('some-error');
+                expect(handleLatestCommitErrorStub.getCall(0).args[2]).to.be.equal('some-status');
             });
         });
     });

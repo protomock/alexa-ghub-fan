@@ -15,9 +15,9 @@ describe('GitHubClientErrorHandler.js', function() {
         promptRepoAlreadyExistsErrorStub = sinon.stub(plainTextResponder, 'promptRepoAlreadyExistsError');
         mockInjector.inject('../src/PlainTextResponder', plainTextResponder);
 
-        subject = mockInjector.subject('../src/GitHubClientErrorHandler');
         responseMock = {};
-
+        var GitHubClientErrorHandler = mockInjector.subject('../src/GitHubClientErrorHandler');
+        subject = new GitHubClientErrorHandler(responseMock);
     });
 
     afterEach(function() {
@@ -29,7 +29,7 @@ describe('GitHubClientErrorHandler.js', function() {
     describe('handleLatestCommitError', function() {
         context('when the error is a 409', function() {
             beforeEach(function() {
-                subject.handleLatestCommitError('some-repo', responseMock, 'some-error', 409);
+                subject.handleLatestCommitError('some-repo', 'some-error', 409);
             });
 
             it('should prompt the user that the repo was empty', function() {
@@ -41,7 +41,7 @@ describe('GitHubClientErrorHandler.js', function() {
 
         context('when any other error', function() {
             beforeEach(function() {
-                subject.handleLatestCommitError('some-repo', responseMock, 'some-error', 500);
+                subject.handleLatestCommitError('some-repo', 'some-error', 500);
             });
 
             it('should prompt the user that there was an error', function() {
@@ -53,7 +53,7 @@ describe('GitHubClientErrorHandler.js', function() {
 
     describe('handleListMyRepositoriesError', function() {
         beforeEach(function() {
-            subject.handleListMyRepositoriesError(responseMock, 'some-error', 500);
+            subject.handleListMyRepositoriesError('some-error', 500);
         });
 
         it('should prompt the user that there was an error', function() {
@@ -64,7 +64,7 @@ describe('GitHubClientErrorHandler.js', function() {
 
     describe('handleListAllMyOpenIssuesError', function() {
         beforeEach(function() {
-            subject.handleListAllMyOpenIssuesError(responseMock, 'some-error', 500);
+            subject.handleListAllMyOpenIssuesError('some-error', 500);
         });
 
         it('should prompt the user that there was an error', function() {
@@ -75,7 +75,7 @@ describe('GitHubClientErrorHandler.js', function() {
     describe('handleCreateRepositoryError', function() {
         context('when the error is a 422', function() {
             beforeEach(function() {
-                subject.handleCreateRepositoryError('some-repo', responseMock, 'some-error', 422);
+                subject.handleCreateRepositoryError('some-repo', 'some-error', 422);
             });
 
             it('should prompt the user that the repo already exists', function() {
@@ -87,7 +87,7 @@ describe('GitHubClientErrorHandler.js', function() {
 
         context('when any other error', function() {
             beforeEach(function() {
-                subject.handleCreateRepositoryError('some-repo', responseMock, 'some-error', 500);
+                subject.handleCreateRepositoryError('some-repo', 'some-error', 500);
             });
 
             it('should prompt the user that there was an error', function() {
@@ -99,7 +99,7 @@ describe('GitHubClientErrorHandler.js', function() {
 
     describe('handleGetMyInfoError', function() {
         beforeEach(function() {
-            subject.handleGetMyInfoError(responseMock, 'some-error', 500);
+            subject.handleGetMyInfoError('some-error', 500);
         });
 
         it('should prompt the user that there was an error', function() {

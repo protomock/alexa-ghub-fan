@@ -1,28 +1,32 @@
 var plainTextResponder = require('./PlainTextResponder');
 
-module.exports = {
-    handleLatestCommitError: function(repositoryName, response, error, statusCode) {
+function GitHubClientErrorHandler(response) {
+  this.response = response
+}
+
+GitHubClientErrorHandler.prototype = {
+    handleLatestCommitError: function(repositoryName, error, statusCode) {
         if (statusCode == 409) {
-            plainTextResponder.promptRepoEmptyError(repositoryName, response);
+            plainTextResponder.promptRepoEmptyError(repositoryName, this.response);
         } else {
-          HandleCommonGitHubErrors(response, statusCode);
+          HandleCommonGitHubErrors(this.response, statusCode);
         }
     },
-    handleListMyRepositoriesError: function(response, error, statusCode) {
-        plainTextResponder.promptApiErrorResponse(response);
+    handleListMyRepositoriesError: function(error, statusCode) {
+        plainTextResponder.promptApiErrorResponse(this.response);
     },
-    handleListAllMyOpenIssuesError: function(response, error, statusCode) {
-        plainTextResponder.promptApiErrorResponse(response);
+    handleListAllMyOpenIssuesError: function(error, statusCode) {
+        plainTextResponder.promptApiErrorResponse(this.response);
     },
-    handleCreateRepositoryError: function(repositoryName, response, error, statusCode) {
+    handleCreateRepositoryError: function(repositoryName, error, statusCode) {
         if (statusCode == 422) {
-            plainTextResponder.promptRepoAlreadyExistsError(repositoryName, response);
+            plainTextResponder.promptRepoAlreadyExistsError(repositoryName, this.response);
         } else {
-            HandleCommonGitHubErrors(response, statusCode);
+            HandleCommonGitHubErrors(this.response, statusCode);
         }
     },
-    handleGetMyInfoError: function(response, error, statusCode) {
-        HandleCommonGitHubErrors(response, statusCode);
+    handleGetMyInfoError: function(error, statusCode) {
+        HandleCommonGitHubErrors(this.response, statusCode);
     }
 };
 
@@ -36,3 +40,6 @@ function HandleCommonGitHubErrors(response, statusCode) {
             plainTextResponder.promptApiErrorResponse(response);
     }
 }
+
+
+module.exports = GitHubClientErrorHandler;
