@@ -4,12 +4,17 @@
   "description": "Alexa github helper",
   "main": "index.js",
   "scripts": {
-    "test": "mocha specs"
+    "test": "node_modules/eslint/bin/eslint.js specs/** && mocha specs"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "chai": "^3.5.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "gulp-awslambda": "^0.4.0",
     "gulp-load-plugins": "^1.5.0",
     "gulp-mocha": "^3.0.1",
@@ -17,5 +22,8 @@
     "mocha": "^3.2.0",
     "mock-injector": "0.0.2",
     "sinon": "^1.17.6"
+  },
+  "dependencies": {
+    "eslint": "^4.6.0"
   }
 }

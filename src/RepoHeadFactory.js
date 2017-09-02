@@ -1,5 +1,5 @@
-var RepoHead = require('./RepoHead');
+var RepoHead = require('./RepoHead')
 
-module.exports.createInstance = function() {
-  return new RepoHead();
+module.exports.createInstance = function () {
+  return new RepoHead()
 }

@@ -1,0 +1,8 @@
+{
+    "root": true,
+    "extends": "standard",
+    "rules": {
+        "no-unused-expressions": "off",
+        "no-redeclare": "error"
+    }
+}
